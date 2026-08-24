@@ -50,6 +50,15 @@ export const PRODUCTS = [
   { mfg: 'Yara', domain: 'yara.com', name: 'YaraMila', type: 'Fertilizante NPK', ingredient: 'N-P-K + micronutrientes', presentation: '25 kg', price: 890, category: 'nutricion', crops: ['any'] },
   { mfg: 'ICL', domain: 'icl-group.com', name: 'Agroleaf Power', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + micronutrientes', presentation: '20 kg', price: 1050, category: 'nutricion', crops: ['any'] },
   { mfg: 'SQM', domain: 'sqm.com', name: 'Ultrasol', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + elementos menores', presentation: '25 kg', price: 960, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Haifa', domain: 'haifa-group.com', name: 'Multi-K', type: 'Fertilizante potásico', ingredient: 'Nitrato de potasio', presentation: '25 kg', price: 980, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Haifa', domain: 'haifa-group.com', name: 'Haifa Cal', type: 'Fertilizante cálcico', ingredient: 'Nitrato de calcio', presentation: '25 kg', price: 750, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Mosaic', domain: 'mosaicco.com', name: 'MicroEssentials', type: 'Fertilizante NPK + azufre', ingredient: 'NPK + Azufre', presentation: '50 kg', price: 1100, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Mosaic', domain: 'mosaicco.com', name: 'Aspire', type: 'Fertilizante potásico', ingredient: 'Potasio + Boro', presentation: '25 kg', price: 890, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Nutrien Ag Solutions', domain: 'nutrien.com', name: 'ESN', type: 'Fertilizante nitrogenado de liberación controlada', ingredient: 'Urea recubierta de polímero', presentation: '25 kg', price: 920, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Nutrien Ag Solutions', domain: 'nutrien.com', name: 'Suståin', type: 'Fertilizante fosfatado', ingredient: 'Fósforo', presentation: '25 kg', price: 860, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Compo Expert', domain: 'compo-expert.com', name: 'Basfoliar', type: 'Bioestimulante foliar', ingredient: 'Micronutrientes + aminoácidos', presentation: '1 L', price: 420, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Compo Expert', domain: 'compo-expert.com', name: 'Novatec', type: 'Fertilizante nitrogenado estabilizado', ingredient: 'Urea + DMPP', presentation: '25 kg', price: 940, category: 'nutricion', crops: ['any'] },
+  { mfg: 'Van Iperen', domain: 'vaniperen.com', name: 'Kristalon', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + micronutrientes', presentation: '25 kg', price: 1020, category: 'nutricion', crops: ['any'] },
 ];
 
 // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
@@ -85,4 +94,9 @@ export const MANUFACTURERS = [
   { name: 'Yara', domain: 'yara.com', categories: 'Nutrición vegetal' },
   { name: 'ICL', domain: 'icl-group.com', categories: 'Nutrición vegetal' },
   { name: 'SQM', domain: 'sqm.com', categories: 'Nutrición vegetal' },
+  { name: 'Haifa', domain: 'haifa-group.com', categories: 'Nutrición vegetal' },
+  { name: 'Mosaic', domain: 'mosaicco.com', categories: 'Nutrición vegetal' },
+  { name: 'Nutrien Ag Solutions', domain: 'nutrien.com', categories: 'Nutrición vegetal' },
+  { name: 'Compo Expert', domain: 'compo-expert.com', categories: 'Nutrición vegetal' },
+  { name: 'Van Iperen', domain: 'vaniperen.com', categories: 'Nutrición vegetal' },
 ];

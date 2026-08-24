@@ -1,7 +1,14 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-native';
-import { colors } from '../theme';
+import { colors, categoryColors } from '../theme';
 import { matchProducts, CATEGORY_LABEL, CATEGORY_BY_PROBLEM } from '../data/products';
+
+const CAT_LEGEND = [
+  { key: 'plaga', label: 'Insecticida' },
+  { key: 'enfermedad', label: 'Fungicida' },
+  { key: 'maleza', label: 'Herbicida' },
+  { key: 'nutricion', label: 'Nutrición' },
+];
 
 export default function ResultsScreen({ crop, problem, onBack }) {
   const matches = matchProducts(crop, problem);
@@ -26,6 +33,15 @@ export default function ResultsScreen({ crop, problem, onBack }) {
         {category ? ` (${CATEGORY_LABEL[category]})` : ''}. Ningún fabricante paga por aparecer primero.
       </Text>
 
+      <View style={styles.legendRow}>
+        {CAT_LEGEND.map((c) => (
+          <View key={c.key} style={styles.legendChip}>
+            <View style={[styles.legendDot, { backgroundColor: categoryColors[c.key].main }]} />
+            <Text style={styles.legendLabel}>{c.label}</Text>
+          </View>
+        ))}
+      </View>
+
       {matches.length === 0 && (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyText}>
@@ -34,12 +50,17 @@ export default function ResultsScreen({ crop, problem, onBack }) {
         </View>
       )}
 
-      {matches.map((p, i) => (
-        <View key={p.mfg + p.name} style={styles.card}>
+      {matches.map((p, i) => {
+        const accent = categoryColors[p.category].main;
+        const tint = categoryColors[p.category].tint;
+        return (
+        <View key={p.mfg + p.name} style={[styles.card, { borderTopColor: accent, borderTopWidth: 4 }]}>
           <Text style={styles.rank}>Opción {i + 1}</Text>
-          <Text style={styles.mfg}>{p.mfg}</Text>
+          <Text style={[styles.mfg, { color: accent }]}>{p.mfg}</Text>
           <Text style={styles.name}>{p.name}</Text>
-          <Text style={styles.type}>{p.type}</Text>
+          <View style={[styles.typeBadge, { backgroundColor: tint }]}>
+            <Text style={[styles.typeBadgeText, { color: accent }]}>{p.type}</Text>
+          </View>
 
           <View style={styles.specs}>
             <View style={styles.specRow}>
@@ -61,11 +82,12 @@ export default function ResultsScreen({ crop, problem, onBack }) {
             <Text style={styles.priceSource}>Ejemplo · actualizado 23/08/2026</Text>
           </View>
 
-          <Pressable style={styles.buyBtn} onPress={() => openFicha(p)}>
+          <Pressable style={[styles.buyBtn, { backgroundColor: accent }]} onPress={() => openFicha(p)}>
             <Text style={styles.buyBtnText}>Ficha técnica en {p.mfg} ↗</Text>
           </Pressable>
         </View>
-      ))}
+        );
+      })}
 
       <Text style={styles.footNote}>
         ◍ Catálogo y precios de ejemplo para esta demostración.
@@ -84,7 +106,15 @@ const styles = StyleSheet.create({
     color: colors.green, fontWeight: '700', marginBottom: 6,
   },
   title: { fontSize: 24, fontWeight: '700', color: colors.ink, marginBottom: 8 },
-  lede: { fontSize: 14, color: colors.inkSoft, lineHeight: 20, marginBottom: 20 },
+  lede: { fontSize: 14, color: colors.inkSoft, lineHeight: 20, marginBottom: 14 },
+  legendRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
+  legendChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    borderWidth: 1, borderColor: colors.line, backgroundColor: colors.paperRaised,
+    borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5,
+  },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendLabel: { fontSize: 12, fontWeight: '600', color: colors.inkSoft },
   emptyCard: {
     padding: 24, borderRadius: 8, borderWidth: 1, borderStyle: 'dashed',
     borderColor: colors.line, backgroundColor: colors.paperRaised,
@@ -100,7 +130,10 @@ const styles = StyleSheet.create({
   },
   mfg: { fontSize: 13, color: colors.green, fontWeight: '700', marginTop: 8 },
   name: { fontSize: 20, fontWeight: '700', color: colors.ink, marginTop: 2 },
-  type: { fontSize: 13.5, color: colors.inkSoft, marginTop: 2 },
+  typeBadge: {
+    alignSelf: 'flex-start', borderRadius: 20, paddingHorizontal: 11, paddingVertical: 3, marginTop: 8,
+  },
+  typeBadgeText: { fontSize: 12.5, fontWeight: '600' },
   specs: {
     marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.line, gap: 6,
   },
