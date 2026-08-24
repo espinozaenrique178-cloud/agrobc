@@ -1,0 +1,8 @@
+node_modules/
+.claude/
+.expo/
+*.zip
+dist/
+web-build/
+.DS_Store
+npm-debug.*

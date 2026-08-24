@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "AgroBC",
+    "slug": "agrobc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#EDE8D8",
+    "splash": {
+      "backgroundColor": "#EDE8D8"
+    },
+    "ios": {
+      "bundleIdentifier": "com.agrobc.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.agrobc.app"
+    }
+  }
+}
