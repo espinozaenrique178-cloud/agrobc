@@ -15,6 +15,18 @@
     },
     "android": {
       "package": "com.agrobc.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "84e530be-e5b3-42ea-a164-6ae3656db8ed"
+      }
+    },
+    "owner": "kikey25",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/84e530be-e5b3-42ea-a164-6ae3656db8ed"
     }
   }
 }
