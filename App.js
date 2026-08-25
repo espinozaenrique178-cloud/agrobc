@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from './src/theme';
 import { supabase } from './src/supabase';
-import { setFertilizantes } from './src/data/products';
+import { setProducts, addCrops, CATEGORY_BY_PROBLEM } from './src/data/products';
 import HomeScreen from './src/screens/HomeScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import ManufacturersScreen from './src/screens/ManufacturersScreen';
@@ -26,21 +26,32 @@ export default function App() {
   const [dataVersion, setDataVersion] = useState(0);
 
   useEffect(() => {
-    supabase
-      .from('fertilizantes')
-      .select('*')
-      .order('name')
-      .then(({ data }) => {
-        if (data) {
-          setFertilizantes(data);
-          setDataVersion((v) => v + 1);
-        }
-      });
+    supabase.from('productos').select('*').order('name').then(({ data }) => {
+      if (data && data.length) {
+        setProducts(data);
+        setDataVersion((v) => v + 1);
+      }
+    });
+    supabase.from('crops').select('*').order('sort_order').then(({ data }) => {
+      if (data && data.length) {
+        addCrops(data);
+        setDataVersion((v) => v + 1);
+      }
+    });
   }, []);
 
   function goTab(key) {
     setSearch(null);
     setTab(key);
+  }
+
+  function handleSearch(crop, problem) {
+    setSearch({ crop, problem });
+    supabase.from('search_logs').insert({
+      crop,
+      problem,
+      category: CATEGORY_BY_PROBLEM[problem] || null,
+    });
   }
 
   let content;
@@ -49,7 +60,7 @@ export default function App() {
       <ResultsScreen key={dataVersion} crop={search.crop} problem={search.problem} onBack={() => setSearch(null)} />
     );
   } else if (tab === 'buscar') {
-    content = <HomeScreen onSearch={(crop, problem) => setSearch({ crop, problem })} />;
+    content = <HomeScreen key={dataVersion} onSearch={handleSearch} />;
   } else if (tab === 'fabricantes') {
     content = <ManufacturersScreen />;
   } else if (tab === 'admin') {

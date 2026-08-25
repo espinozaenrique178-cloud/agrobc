@@ -3,6 +3,12 @@ export const CROPS = [
   'Chile', 'Cebolla', 'Brócoli', 'Aguacate', 'Espárrago', 'Alfalfa',
 ];
 
+export function addCrops(rows) {
+  (rows || []).forEach((row) => {
+    if (!CROPS.includes(row.name)) CROPS.push(row.name);
+  });
+}
+
 export const PROBLEMS = [
   'Plaga', 'Enfermedad', 'Maleza', 'Nutrición',
   'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
@@ -22,63 +28,53 @@ export const CATEGORY_LABEL = {
   nutricion: 'Nutrición',
 };
 
-export const PRODUCTS = [
+// Respaldo mientras carga Supabase o si falla la conexión.
+const FALLBACK_PRODUCTS = [
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Sivanto Prime', type: 'Insecticida', ingredient: 'Flupyradifurona', presentation: '1 L', price: 480, category: 'plaga', crops: ['Tomate', 'Fresa', 'Chile', 'Pepino', 'Lechuga'] },
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Confidor', type: 'Insecticida', ingredient: 'Imidacloprid', presentation: '1 L', price: 410, category: 'plaga', crops: ['Tomate', 'Cebolla', 'Brócoli'] },
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Decis', type: 'Insecticida', ingredient: 'Deltametrina', presentation: '500 ml', price: 365, category: 'plaga', crops: ['Fresa', 'Chile', 'Lechuga'] },
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Movento', type: 'Insecticida', ingredient: 'Espirotetramat', presentation: '1 L', price: 590, category: 'plaga', crops: ['Vid', 'Aguacate'] },
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Fitoraz', type: 'Fungicida', ingredient: 'Propineb + Cimoxanilo', presentation: '1 kg', price: 445, category: 'enfermedad', crops: ['Tomate', 'Vid', 'Aguacate'] },
   { mfg: 'Bayer', domain: 'bayer.com', name: 'Aliette', type: 'Fungicida', ingredient: 'Fosetil-Al', presentation: '1 kg', price: 520, category: 'enfermedad', crops: ['Vid', 'Aguacate', 'Fresa'] },
-
   { mfg: 'Syngenta', domain: 'syngenta.com', name: 'Actara', type: 'Insecticida', ingredient: 'Tiametoxam', presentation: '1 kg', price: 520, category: 'plaga', crops: ['Tomate', 'Chile', 'Lechuga', 'Brócoli'] },
   { mfg: 'Syngenta', domain: 'syngenta.com', name: 'Engeo', type: 'Insecticida', ingredient: 'Tiametoxam + Lambdacihalotrina', presentation: '1 L', price: 610, category: 'plaga', crops: ['Fresa', 'Pepino', 'Chile'] },
   { mfg: 'Syngenta', domain: 'syngenta.com', name: 'Amistar', type: 'Fungicida', ingredient: 'Azoxistrobina', presentation: '1 L', price: 680, category: 'enfermedad', crops: ['Tomate', 'Vid', 'Fresa'] },
   { mfg: 'Syngenta', domain: 'syngenta.com', name: 'Gramoxone', type: 'Herbicida', ingredient: 'Paraquat', presentation: '5 L', price: 390, category: 'maleza', crops: ['any'] },
-
   { mfg: 'Corteva', domain: 'corteva.com', name: 'Coragen', type: 'Insecticida', ingredient: 'Clorantraniliprol', presentation: '1 L', price: 730, category: 'plaga', crops: ['Tomate', 'Chile', 'Lechuga', 'Brócoli'] },
   { mfg: 'Corteva', domain: 'corteva.com', name: 'Lannate', type: 'Insecticida', ingredient: 'Metomilo', presentation: '1 L', price: 340, category: 'plaga', crops: ['Tomate', 'Fresa', 'Pepino'] },
   { mfg: 'Corteva', domain: 'corteva.com', name: 'Tordon', type: 'Herbicida', ingredient: 'Picloram', presentation: '1 L', price: 455, category: 'maleza', crops: ['Trigo', 'Alfalfa'] },
-
   { mfg: 'UPL', domain: 'upl-ltd.com', name: 'Lancer Gold', type: 'Insecticida', ingredient: 'Acetamiprid', presentation: '500 g', price: 295, category: 'plaga', crops: ['Tomate', 'Chile'] },
   { mfg: 'UPL', domain: 'upl-ltd.com', name: 'Manzate', type: 'Fungicida', ingredient: 'Mancozeb', presentation: '1 kg', price: 260, category: 'enfermedad', crops: ['Tomate', 'Fresa', 'Vid', 'Cebolla'] },
-
   { mfg: 'BASF', domain: 'agriculture.basf.com', name: 'Cabrio', type: 'Fungicida', ingredient: 'Piraclostrobina', presentation: '1 L', price: 715, category: 'enfermedad', crops: ['Vid', 'Fresa', 'Aguacate'] },
   { mfg: 'BASF', domain: 'agriculture.basf.com', name: 'Priori Xtra', type: 'Fungicida', ingredient: 'Azoxistrobina + Ciproconazol', presentation: '1 L', price: 750, category: 'enfermedad', crops: ['Tomate', 'Cebolla', 'Lechuga'] },
   { mfg: 'BASF', domain: 'agriculture.basf.com', name: 'Basta', type: 'Herbicida', ingredient: 'Glufosinato de amonio', presentation: '1 L', price: 470, category: 'maleza', crops: ['any'] },
-
-  // Los fertilizantes (categoría 'nutricion') ya no van fijos aquí — se cargan
-  // en vivo desde Supabase (tabla `fertilizantes`), administrados desde AdminPanelScreen.
 ];
 
-// Catálogo dinámico de fertilizantes, llenado por setFertilizantes() tras
-// consultar Supabase. Vive aparte de PRODUCTS para no tocar el resto del archivo.
-let fertilizantes = [];
+// Todo el catálogo real vive en Supabase (`productos`), administrado desde
+// AdminPanelScreen. PRODUCTS se reemplaza por completo cuando llega esa data.
+export let PRODUCTS = FALLBACK_PRODUCTS;
 
-export function setFertilizantes(rows) {
-  fertilizantes = (rows || []).map((row) => ({
-    mfg: row.mfg || 'Fertilizante',
+export function setProducts(rows) {
+  if (!rows || rows.length === 0) return;
+  PRODUCTS = rows.map((row) => ({
+    mfg: row.mfg || '',
     domain: '',
     fichaUrl: row.ficha_tecnica || '',
     name: row.name,
-    type: 'Fertilizante',
-    ingredient: '',
-    presentation: row.presentation,
+    type: row.type || '',
+    ingredient: row.ingredient || '',
+    presentation: row.presentation || '',
     price: Number(row.price) || 0,
-    category: 'nutricion',
-    crops: ['any'],
+    category: row.category,
+    crops: row.crops && row.crops.length ? row.crops : ['any'],
   }));
-}
-
-function allProducts() {
-  return PRODUCTS.concat(fertilizantes);
 }
 
 // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
 // de la categoría pedida, luego el resto de esa misma categoría.
 export function matchProducts(cropValue, problemValue) {
   const category = CATEGORY_BY_PROBLEM[problemValue] || null;
-  const all = allProducts();
-  const inCategory = category ? all.filter((p) => p.category === category) : all.slice();
+  const inCategory = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS.slice();
 
   const cropSpecific = inCategory.filter((p) => p.crops.includes(cropValue));
   const cropAny = inCategory.filter((p) => p.crops.includes('any'));
