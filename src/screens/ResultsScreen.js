@@ -15,6 +15,10 @@ export default function ResultsScreen({ crop, problem, onBack }) {
   const category = CATEGORY_BY_PROBLEM[problem];
 
   function openFicha(product) {
+    if (product.fichaUrl) {
+      Linking.openURL(product.fichaUrl);
+      return;
+    }
     const query = `site:${product.domain} "${product.name}" ficha técnica`;
     const url = 'https://www.google.com/search?q=' + encodeURIComponent(query);
     Linking.openURL(url);
@@ -63,10 +67,12 @@ export default function ResultsScreen({ crop, problem, onBack }) {
           </View>
 
           <View style={styles.specs}>
-            <View style={styles.specRow}>
-              <Text style={styles.specLabel}>Ingrediente activo</Text>
-              <Text style={styles.specValue}>{p.ingredient}</Text>
-            </View>
+            {!!p.ingredient && (
+              <View style={styles.specRow}>
+                <Text style={styles.specLabel}>Ingrediente activo</Text>
+                <Text style={styles.specValue}>{p.ingredient}</Text>
+              </View>
+            )}
             <View style={styles.specRow}>
               <Text style={styles.specLabel}>Presentación</Text>
               <Text style={styles.specValue}>{p.presentation}</Text>

@@ -46,26 +46,39 @@ export const PRODUCTS = [
   { mfg: 'BASF', domain: 'agriculture.basf.com', name: 'Priori Xtra', type: 'Fungicida', ingredient: 'Azoxistrobina + Ciproconazol', presentation: '1 L', price: 750, category: 'enfermedad', crops: ['Tomate', 'Cebolla', 'Lechuga'] },
   { mfg: 'BASF', domain: 'agriculture.basf.com', name: 'Basta', type: 'Herbicida', ingredient: 'Glufosinato de amonio', presentation: '1 L', price: 470, category: 'maleza', crops: ['any'] },
 
-  { mfg: 'Yara', domain: 'yara.com', name: 'YaraVita', type: 'Bioestimulante foliar', ingredient: 'Micronutrientes quelatados', presentation: '1 L', price: 310, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Yara', domain: 'yara.com', name: 'YaraMila', type: 'Fertilizante NPK', ingredient: 'N-P-K + micronutrientes', presentation: '25 kg', price: 890, category: 'nutricion', crops: ['any'] },
-  { mfg: 'ICL', domain: 'icl-group.com', name: 'Agroleaf Power', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + micronutrientes', presentation: '20 kg', price: 1050, category: 'nutricion', crops: ['any'] },
-  { mfg: 'SQM', domain: 'sqm.com', name: 'Ultrasol', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + elementos menores', presentation: '25 kg', price: 960, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Haifa', domain: 'haifa-group.com', name: 'Multi-K', type: 'Fertilizante potásico', ingredient: 'Nitrato de potasio', presentation: '25 kg', price: 980, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Haifa', domain: 'haifa-group.com', name: 'Haifa Cal', type: 'Fertilizante cálcico', ingredient: 'Nitrato de calcio', presentation: '25 kg', price: 750, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Mosaic', domain: 'mosaicco.com', name: 'MicroEssentials', type: 'Fertilizante NPK + azufre', ingredient: 'NPK + Azufre', presentation: '50 kg', price: 1100, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Mosaic', domain: 'mosaicco.com', name: 'Aspire', type: 'Fertilizante potásico', ingredient: 'Potasio + Boro', presentation: '25 kg', price: 890, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Nutrien Ag Solutions', domain: 'nutrien.com', name: 'ESN', type: 'Fertilizante nitrogenado de liberación controlada', ingredient: 'Urea recubierta de polímero', presentation: '25 kg', price: 920, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Nutrien Ag Solutions', domain: 'nutrien.com', name: 'Suståin', type: 'Fertilizante fosfatado', ingredient: 'Fósforo', presentation: '25 kg', price: 860, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Compo Expert', domain: 'compo-expert.com', name: 'Basfoliar', type: 'Bioestimulante foliar', ingredient: 'Micronutrientes + aminoácidos', presentation: '1 L', price: 420, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Compo Expert', domain: 'compo-expert.com', name: 'Novatec', type: 'Fertilizante nitrogenado estabilizado', ingredient: 'Urea + DMPP', presentation: '25 kg', price: 940, category: 'nutricion', crops: ['any'] },
-  { mfg: 'Van Iperen', domain: 'vaniperen.com', name: 'Kristalon', type: 'Fertilizante hidrosoluble', ingredient: 'NPK + micronutrientes', presentation: '25 kg', price: 1020, category: 'nutricion', crops: ['any'] },
+  // Los fertilizantes (categoría 'nutricion') ya no van fijos aquí — se cargan
+  // en vivo desde Supabase (tabla `fertilizantes`), administrados desde AdminPanelScreen.
 ];
+
+// Catálogo dinámico de fertilizantes, llenado por setFertilizantes() tras
+// consultar Supabase. Vive aparte de PRODUCTS para no tocar el resto del archivo.
+let fertilizantes = [];
+
+export function setFertilizantes(rows) {
+  fertilizantes = (rows || []).map((row) => ({
+    mfg: row.mfg || 'Fertilizante',
+    domain: '',
+    fichaUrl: row.ficha_tecnica || '',
+    name: row.name,
+    type: 'Fertilizante',
+    ingredient: '',
+    presentation: row.presentation,
+    price: Number(row.price) || 0,
+    category: 'nutricion',
+    crops: ['any'],
+  }));
+}
+
+function allProducts() {
+  return PRODUCTS.concat(fertilizantes);
+}
 
 // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
 // de la categoría pedida, luego el resto de esa misma categoría.
 export function matchProducts(cropValue, problemValue) {
   const category = CATEGORY_BY_PROBLEM[problemValue] || null;
-  const inCategory = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS.slice();
+  const all = allProducts();
+  const inCategory = category ? all.filter((p) => p.category === category) : all.slice();
 
   const cropSpecific = inCategory.filter((p) => p.crops.includes(cropValue));
   const cropAny = inCategory.filter((p) => p.crops.includes('any'));

@@ -1,22 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from './src/theme';
+import { supabase } from './src/supabase';
+import { setFertilizantes } from './src/data/products';
 import HomeScreen from './src/screens/HomeScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import ManufacturersScreen from './src/screens/ManufacturersScreen';
 import SignupScreen from './src/screens/SignupScreen';
+import AdminLoginScreen from './src/screens/AdminLoginScreen';
+import AdminPanelScreen from './src/screens/AdminPanelScreen';
 
 const TABS = [
   { key: 'buscar', label: 'Buscar' },
   { key: 'fabricantes', label: 'Fabricantes' },
   { key: 'sumate', label: 'Súmate' },
+  { key: 'admin', label: 'Admin' },
 ];
 
 export default function App() {
   const [tab, setTab] = useState('buscar');
   const [search, setSearch] = useState(null); // { crop, problem } | null
+  const [adminSession, setAdminSession] = useState(null);
+  const [dataVersion, setDataVersion] = useState(0);
+
+  useEffect(() => {
+    supabase
+      .from('fertilizantes')
+      .select('*')
+      .order('name')
+      .then(({ data }) => {
+        if (data) {
+          setFertilizantes(data);
+          setDataVersion((v) => v + 1);
+        }
+      });
+  }, []);
 
   function goTab(key) {
     setSearch(null);
@@ -26,12 +46,21 @@ export default function App() {
   let content;
   if (tab === 'buscar' && search) {
     content = (
-      <ResultsScreen crop={search.crop} problem={search.problem} onBack={() => setSearch(null)} />
+      <ResultsScreen key={dataVersion} crop={search.crop} problem={search.problem} onBack={() => setSearch(null)} />
     );
   } else if (tab === 'buscar') {
     content = <HomeScreen onSearch={(crop, problem) => setSearch({ crop, problem })} />;
   } else if (tab === 'fabricantes') {
     content = <ManufacturersScreen />;
+  } else if (tab === 'admin') {
+    content = adminSession ? (
+      <AdminPanelScreen
+        onLoggedOut={() => setAdminSession(null)}
+        onDataChanged={() => setDataVersion((v) => v + 1)}
+      />
+    ) : (
+      <AdminLoginScreen onLoggedIn={(session) => setAdminSession(session)} />
+    );
   } else {
     content = <SignupScreen />;
   }
