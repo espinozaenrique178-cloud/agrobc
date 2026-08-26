@@ -9,15 +9,23 @@ import FloatingTabBar from './src/components/FloatingTabBar';
 import HomeScreen from './src/screens/HomeScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import ManufacturersScreen from './src/screens/ManufacturersScreen';
+import CalculatorScreen from './src/screens/CalculatorScreen';
+import AccountEntryScreen from './src/screens/AccountEntryScreen';
+import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
-import AdminLoginScreen from './src/screens/AdminLoginScreen';
 import AdminPanelScreen from './src/screens/AdminPanelScreen';
+import UserAccountScreen from './src/screens/UserAccountScreen';
 
 export default function App() {
   const [tab, setTab] = useState('buscar');
   const [search, setSearch] = useState(null); // { crop, problem } | null
-  const [adminSession, setAdminSession] = useState(null);
   const [dataVersion, setDataVersion] = useState(0);
+
+  // Cuenta: session/role vienen de Supabase Auth; accountView solo controla
+  // qué pantalla se muestra ANTES de que haya sesión (entry/login/signup).
+  const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [accountView, setAccountView] = useState('entry'); // 'entry' | 'login' | 'signup'
 
   useEffect(() => {
     supabase.from('productos').select('*').order('name').then(({ data }) => {
@@ -48,6 +56,18 @@ export default function App() {
     });
   }
 
+  function handleAuthed(newSession, admin) {
+    setSession(newSession);
+    setIsAdmin(admin);
+    setAccountView('entry');
+  }
+
+  function handleLoggedOut() {
+    setSession(null);
+    setIsAdmin(false);
+    setAccountView('entry');
+  }
+
   let content;
   if (tab === 'buscar' && search) {
     content = (
@@ -57,17 +77,30 @@ export default function App() {
     content = <HomeScreen key={dataVersion} onSearch={handleSearch} />;
   } else if (tab === 'fabricantes') {
     content = <ManufacturersScreen />;
+  } else if (tab === 'calculadora') {
+    content = <CalculatorScreen />;
   } else if (tab === 'admin') {
-    content = adminSession ? (
-      <AdminPanelScreen
-        onLoggedOut={() => setAdminSession(null)}
-        onDataChanged={() => setDataVersion((v) => v + 1)}
-      />
-    ) : (
-      <AdminLoginScreen onLoggedIn={(session) => setAdminSession(session)} />
-    );
-  } else {
-    content = <SignupScreen />;
+    if (session && isAdmin) {
+      content = (
+        <AdminPanelScreen
+          onLoggedOut={handleLoggedOut}
+          onDataChanged={() => setDataVersion((v) => v + 1)}
+        />
+      );
+    } else if (session) {
+      content = <UserAccountScreen session={session} onLoggedOut={handleLoggedOut} />;
+    } else if (accountView === 'login') {
+      content = <LoginScreen onLoggedIn={handleAuthed} onBack={() => setAccountView('entry')} />;
+    } else if (accountView === 'signup') {
+      content = <SignupScreen onSignedUp={handleAuthed} onBack={() => setAccountView('entry')} />;
+    } else {
+      content = (
+        <AccountEntryScreen
+          onPickLogin={() => setAccountView('login')}
+          onPickSignup={() => setAccountView('signup')}
+        />
+      );
+    }
   }
 
   return (

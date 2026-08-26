@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const TABS = [
   { key: 'buscar', label: 'Buscar', icon: 'search' },
   { key: 'fabricantes', label: 'Fabricantes', icon: 'business' },
-  { key: 'sumate', label: 'Súmate', icon: 'person-add' },
+  { key: 'calculadora', label: 'Calculadora', icon: 'calculator' },
   { key: 'admin', label: 'Admin', icon: 'shield-checkmark' },
 ];
 

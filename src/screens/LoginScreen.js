@@ -3,7 +3,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, KeyboardAvoidingView, Pla
 import { colors } from '../theme';
 import { supabase } from '../supabase';
 
-export default function AdminLoginScreen({ onLoggedIn }) {
+export default function LoginScreen({ onLoggedIn, onBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,14 +25,9 @@ export default function AdminLoginScreen({ onLoggedIn }) {
       setError('No se pudo iniciar sesión: ' + signInError.message);
       return;
     }
-    const { data: isAdmin, error: rpcError } = await supabase.rpc('is_admin');
+    const { data: isAdmin } = await supabase.rpc('is_admin');
     setLoading(false);
-    if (rpcError || !isAdmin) {
-      await supabase.auth.signOut();
-      setError('Esta cuenta no tiene permiso de administrador.');
-      return;
-    }
-    onLoggedIn(data.session);
+    onLoggedIn(data.session, !!isAdmin);
   }
 
   return (
@@ -41,18 +36,22 @@ export default function AdminLoginScreen({ onLoggedIn }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.content}>
-        <Text style={styles.eyebrow}>Acceso restringido</Text>
-        <Text style={styles.title}>Iniciar sesión como administrador</Text>
+        <Pressable onPress={onBack} style={styles.backBtn}>
+          <Text style={styles.backText}>‹ Volver</Text>
+        </Pressable>
+
+        <Text style={styles.eyebrow}>Tu cuenta</Text>
+        <Text style={styles.title}>Iniciar sesión</Text>
         <Text style={styles.lede}>
-          Esta pantalla es independiente de cualquier acceso de usuario público. Solo cuentas
-          dadas de alta manualmente pueden entrar.
+          Si tu cuenta es de administrador, entras directo al panel. Si es una cuenta normal,
+          entras a tu vista de usuario.
         </Text>
 
         <View style={styles.card}>
           <Text style={styles.fieldLabel}>Correo</Text>
           <TextInput
             style={styles.input}
-            placeholder="admin@agrobc.mx"
+            placeholder="tucorreo@ejemplo.com"
             placeholderTextColor={colors.stone}
             autoCapitalize="none"
             autoCorrect={false}
@@ -81,7 +80,9 @@ export default function AdminLoginScreen({ onLoggedIn }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  content: { padding: 20, paddingTop: 32 },
+  content: { padding: 20, paddingTop: 24 },
+  backBtn: { marginBottom: 16 },
+  backText: { color: colors.green, fontWeight: '600', fontSize: 15 },
   eyebrow: {
     fontSize: 12, letterSpacing: 1, textTransform: 'uppercase',
     color: colors.green, fontWeight: '700', marginBottom: 8,
