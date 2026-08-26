@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from './src/theme';
 import { supabase } from './src/supabase';
 import { setProducts, addCrops, CATEGORY_BY_PROBLEM } from './src/data/products';
@@ -71,18 +71,20 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      <StatusBar style="dark" />
-      <View style={styles.header}>
-        <Text style={styles.logo}>
-          AgroBC<Text style={{ color: colors.terra }}>.</Text>
-        </Text>
-      </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.root} edges={['top']}>
+        <StatusBar style="dark" />
+        <View style={styles.header}>
+          <Text style={styles.logo}>
+            AgroBC<Text style={{ color: colors.terra }}>.</Text>
+          </Text>
+        </View>
 
-      <View style={styles.body}>{content}</View>
+        <View style={styles.body}>{content}</View>
 
-      <FloatingTabBar activeTab={tab} onChange={goTab} />
-    </SafeAreaView>
+        <FloatingTabBar activeTab={tab} onChange={goTab} />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
