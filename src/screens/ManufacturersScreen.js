@@ -26,7 +26,7 @@ export default function ManufacturersScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  content: { padding: 20, paddingTop: 24, paddingBottom: 48 },
+  content: { padding: 20, paddingTop: 24, paddingBottom: 140 },
   eyebrow: {
     fontSize: 12, letterSpacing: 1, textTransform: 'uppercase',
     color: colors.green, fontWeight: '700', marginBottom: 6,

@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from './src/theme';
 import { supabase } from './src/supabase';
 import { setProducts, addCrops, CATEGORY_BY_PROBLEM } from './src/data/products';
+import FloatingTabBar from './src/components/FloatingTabBar';
 import HomeScreen from './src/screens/HomeScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import ManufacturersScreen from './src/screens/ManufacturersScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import AdminLoginScreen from './src/screens/AdminLoginScreen';
 import AdminPanelScreen from './src/screens/AdminPanelScreen';
-
-const TABS = [
-  { key: 'buscar', label: 'Buscar' },
-  { key: 'fabricantes', label: 'Fabricantes' },
-  { key: 'sumate', label: 'Súmate' },
-  { key: 'admin', label: 'Admin' },
-];
 
 export default function App() {
   const [tab, setTab] = useState('buscar');
@@ -77,7 +71,7 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.root} edges={['top']}>
       <StatusBar style="dark" />
       <View style={styles.header}>
         <Text style={styles.logo}>
@@ -87,17 +81,7 @@ export default function App() {
 
       <View style={styles.body}>{content}</View>
 
-      <View style={styles.tabBar}>
-        {TABS.map((t) => {
-          const active = tab === t.key;
-          return (
-            <Pressable key={t.key} style={styles.tabItem} onPress={() => goTab(t.key)}>
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t.label}</Text>
-              {active && <View style={styles.tabDot} />}
-            </Pressable>
-          );
-        })}
-      </View>
+      <FloatingTabBar activeTab={tab} onChange={goTab} />
     </SafeAreaView>
   );
 }
@@ -111,13 +95,4 @@ const styles = StyleSheet.create({
   },
   logo: { fontSize: 18, fontWeight: '800', color: colors.ink },
   body: { flex: 1 },
-  tabBar: {
-    flexDirection: 'row', borderTopWidth: 1, borderTopColor: colors.line,
-    backgroundColor: colors.paperRaised,
-    paddingTop: 10, paddingBottom: Platform.OS === 'ios' ? 4 : 10,
-  },
-  tabItem: { flex: 1, alignItems: 'center', paddingBottom: 8 },
-  tabLabel: { fontSize: 13, color: colors.stone, fontWeight: '600' },
-  tabLabelActive: { color: colors.green },
-  tabDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.green, marginTop: 6 },
 });

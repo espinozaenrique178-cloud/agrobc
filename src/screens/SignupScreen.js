@@ -53,7 +53,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   centered: { alignItems: 'center', justifyContent: 'center', padding: 24 },
-  content: { padding: 20, paddingTop: 24, paddingBottom: 48 },
+  content: { padding: 20, paddingTop: 24, paddingBottom: 140 },
   eyebrow: {
     fontSize: 12, letterSpacing: 1, textTransform: 'uppercase',
     color: colors.green, fontWeight: '700', marginBottom: 6,

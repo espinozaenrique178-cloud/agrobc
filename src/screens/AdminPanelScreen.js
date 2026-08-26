@@ -362,7 +362,7 @@ function AnaliticaTab() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  content: { padding: 20, paddingTop: 24, paddingBottom: 48 },
+  content: { padding: 20, paddingTop: 24, paddingBottom: 140 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   eyebrow: {
     fontSize: 12, letterSpacing: 1, textTransform: 'uppercase',

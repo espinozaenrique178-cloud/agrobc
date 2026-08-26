@@ -104,7 +104,7 @@ export default function ResultsScreen({ crop, problem, onBack }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
-  content: { padding: 20, paddingTop: 16, paddingBottom: 48 },
+  content: { padding: 20, paddingTop: 16, paddingBottom: 140 },
   backBtn: { marginBottom: 16 },
   backText: { color: colors.green, fontWeight: '600', fontSize: 15 },
   eyebrow: {
