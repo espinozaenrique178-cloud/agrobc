@@ -15,7 +15,7 @@ export default function FloatingTabBar({ activeTab, onChange }) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.wrap, { bottom: Math.max(insets.bottom, 6) }]} pointerEvents="box-none">
+    <View style={[styles.wrap, { bottom: Math.max(insets.bottom - 20, 4) }]} pointerEvents="box-none">
       <View style={styles.pill}>
         <BlurView intensity={65} tint="dark" style={StyleSheet.absoluteFillObject} />
         <View style={styles.darken} />
