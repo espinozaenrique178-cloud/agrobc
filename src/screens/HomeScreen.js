@@ -52,8 +52,8 @@ export default function HomeScreen({ onSearch }) {
       <Text style={styles.title}>Busca un cultivo y un problema.</Text>
       <Text style={styles.titleAccent}>Compara antes de comprar.</Text>
       <Text style={styles.lede}>
-        Productos agrícolas disponibles en Baja California, comparados por ficha técnica,
-        presentación y precio — sin favoritismos de marca.
+        Productos agrícolas disponibles en Baja California, comparados por ficha técnica
+        y presentación — sin favoritismos de marca.
       </Text>
 
       <View style={styles.card}>

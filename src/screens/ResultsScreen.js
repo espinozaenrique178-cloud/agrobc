@@ -83,12 +83,7 @@ export default function ResultsScreen({ crop, problem, onBack }) {
             </View>
           </View>
 
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>${p.price.toLocaleString('es-MX')}</Text>
-            <Text style={styles.priceSource}>Ejemplo · actualizado 23/08/2026</Text>
-          </View>
-
-          <Pressable style={[styles.buyBtn, { backgroundColor: accent }]} onPress={() => openFicha(p)}>
+          <Pressable style={[styles.buyBtn, { backgroundColor: accent, marginTop: 14 }]} onPress={() => openFicha(p)}>
             <Text style={styles.buyBtnText}>Ficha técnica en {p.mfg} ↗</Text>
           </Pressable>
         </View>
@@ -96,7 +91,7 @@ export default function ResultsScreen({ crop, problem, onBack }) {
       })}
 
       <Text style={styles.footNote}>
-        ◍ Catálogo y precios de ejemplo para esta demostración.
+        ◍ Catálogo de ejemplo para esta demostración.
       </Text>
     </ScrollView>
   );
@@ -146,9 +141,6 @@ const styles = StyleSheet.create({
   specRow: { flexDirection: 'row', justifyContent: 'space-between' },
   specLabel: { fontSize: 13, color: colors.stone },
   specValue: { fontSize: 13, color: colors.ink, fontWeight: '600' },
-  priceRow: { marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.line },
-  price: { fontSize: 22, fontWeight: '700', color: colors.terra },
-  priceSource: { fontSize: 11.5, color: colors.stone, marginTop: 2 },
   buyBtn: {
     marginTop: 14, backgroundColor: colors.green, borderRadius: 8,
     paddingVertical: 12, alignItems: 'center',
