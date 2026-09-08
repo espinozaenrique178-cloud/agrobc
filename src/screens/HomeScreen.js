@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { colors, categoryColors } from '../theme';
-import { CROPS, PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
+import { CROPS, ALL_CROPS, PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
 
 function Pill({ label, active, accentColor, onPress }) {
   const activeStyle = active
@@ -26,10 +26,18 @@ export default function HomeScreen({ onSearch }) {
   const [problemQuery, setProblemQuery] = useState('');
   const [crop, setCrop] = useState('Tomate');
   const [problem, setProblem] = useState('Plaga');
+  const [showAllCrops, setShowAllCrops] = useState(false);
+
+  // En "todos" se unen destacados y catálogo completo: así no desaparece
+  // ningún cultivo agregado desde el panel de admin (addCrops los mete en CROPS).
+  const cropPool = useMemo(() => {
+    if (!showAllCrops) return CROPS;
+    return Array.from(new Set([...CROPS, ...ALL_CROPS])).sort((a, b) => a.localeCompare(b, 'es'));
+  }, [showAllCrops]);
 
   const filteredCrops = useMemo(
-    () => CROPS.filter((c) => c.toLowerCase().includes(cropQuery.trim().toLowerCase())),
-    [cropQuery]
+    () => cropPool.filter((c) => c.toLowerCase().includes(cropQuery.trim().toLowerCase())),
+    [cropPool, cropQuery]
   );
   const filteredProblems = useMemo(
     () => PROBLEMS.filter((p) => p.toLowerCase().includes(problemQuery.trim().toLowerCase())),
@@ -72,7 +80,22 @@ export default function HomeScreen({ onSearch }) {
           {filteredCrops.map((c) => (
             <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
           ))}
+          <Pressable
+            onPress={() => setShowAllCrops((v) => !v)}
+            style={({ pressed }) => [styles.pill, styles.morePill, pressed && { opacity: 0.7 }]}
+            accessibilityRole="button"
+            accessibilityLabel={showAllCrops ? 'Ver solo cultivos destacados' : 'Ver todos los cultivos'}
+          >
+            <Text style={styles.morePillText}>
+              {showAllCrops ? '← Destacados' : '··· Ver todos'}
+            </Text>
+          </Pressable>
         </View>
+        {showAllCrops && (
+          <Text style={styles.catalogNote}>
+            Catálogo completo ({cropPool.length} cultivos) — usa el buscador de arriba para filtrar.
+          </Text>
+        )}
         {filteredCrops.length === 0 && (
           <Text style={styles.emptyNote}>Sin coincidencias — se usará "{cropQuery}" como cultivo escrito.</Text>
         )}
@@ -140,6 +163,9 @@ const styles = StyleSheet.create({
   },
   pillText: { fontSize: 14.5, color: colors.inkSoft },
   pillTextActive: { color: '#F8F5EA', fontWeight: '700' },
+  morePill: { borderStyle: 'dashed', borderColor: colors.green, backgroundColor: colors.greenTint },
+  morePillText: { fontSize: 14.5, color: colors.greenDeep, fontWeight: '700' },
+  catalogNote: { fontSize: 12.5, color: colors.stone, marginTop: 8 },
   emptyNote: { fontSize: 12.5, color: colors.terra, marginTop: 6 },
   searchBtn: {
     marginTop: 18, borderRadius: 8,

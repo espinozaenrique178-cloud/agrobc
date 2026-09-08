@@ -1,6 +1,57 @@
+// Destacados: los cultivos relevantes de Baja California, que se muestran
+// por defecto en el selector. addCrops() suma aquí los que vienen de Supabase.
 export const CROPS = [
   'Tomate', 'Fresa', 'Trigo', 'Lechuga', 'Pepino', 'Vid',
   'Chile', 'Cebolla', 'Brócoli', 'Aguacate', 'Espárrago', 'Alfalfa',
+];
+
+// Catálogo completo, depurado de datos oficiales de SIAP (Servicio de
+// Información Agroalimentaria y Pesquera). Un mismo producto puede usarse en
+// cultivos que no se dan en la localidad del usuario, así que el selector
+// permite llegar a cualquiera de estos, no solo a los destacados.
+export const ALL_CROPS = [
+  'Aceituna', 'Acelga', 'Achiote', 'Agapando', 'Agave', 'Aguacate', 'Ajo', 'Ajonjolí', 'Albahaca',
+  'Albricia', 'Alcachofa', 'Alcatraz', 'Alfalfa achicalada', 'Alfalfa verde', 'Algarrobo',
+  'Algodón hueso', 'Alhelí', 'Alpiste', 'Alstroemeria', 'Amaranto', 'Anturios', 'Anís', 'Apio',
+  'Aretillo', 'Arrayán', 'Arroz palay', 'Arvejón', 'Arándano', 'Aster', 'Ave del paraíso',
+  'Avena forrajera achicalada', 'Avena forrajera en verde', 'Avena grano', 'Baby back choi',
+  'Bambú', 'Bangaña', 'Begonia', 'Belén', 'Berenjena', 'Betabel', 'Boi choi', 'Brócoli',
+  'Cacahuate', 'Cacao', 'Café cereza', 'Caimito', 'Calabacita', 'Calabaza',
+  'Calabaza semilla o chihua', 'Calancoe', 'Camote', 'Canola', 'Capulín', 'Carambolo',
+  'Caña de azúcar', 'Caña de azúcar forrajera', 'Caña de azúcar fruta',
+  'Caña de azúcar piloncillo', 'Cebada forrajera achicalada', 'Cebada forrajera en verde',
+  'Cebada grano', 'Cebolla', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote', 'Chilacayote',
+  'Chile seco', 'Chile verde', 'Chirimoya', 'Chives', 'Chía', 'Chícharo', 'Cilantro', 'Cineraria',
+  'Ciruela', 'Clavel', 'Clyptoria', 'Coco fruta', 'Col (repollo)', 'Col de bruselas', 'Coliflor',
+  'Comino', 'Copra', 'Coquia', 'Crisantemo', 'Cyclamen', 'Cártamo', 'Cártamo forrajero en verde',
+  'Dalia', 'Durazno', 'Dátil', 'Dólar', 'Ebo (janamargo o veza)', 'Ebo (janamargo o veza) grano',
+  'Ejote', 'Elote', 'Eneldo', 'Epazote', 'Espinaca', 'Espárrago', 'Estropajo', 'Eucalipto',
+  'Flor cera', 'Flor perrito', 'Frambuesa', 'Fresa', 'Frijol', 'Frijol forrajero',
+  'Frijol x pelón', 'Gai lan (kay laan)', 'Garbanzo forrajero', 'Garbanzo grano',
+  'Garbanzo porquero', 'Geranio', 'Gerbera', 'Girasol', 'Girasol flor', 'Girasol forrajero',
+  'Gladiola', 'Granada', 'Guaje', 'Guamúchil', 'Guanábana', 'Guayaba', 'Haba grano', 'Haba verde',
+  'Helecho', 'Henequén', 'Hierbabuena', 'Higo', 'Hoja de plátano (belillo)', 'Hortensia',
+  'Huauzontle', 'Hule hevea', 'Inmortal', 'Jaca (jackfruit)', 'Jamaica', 'Jatropha', 'Jengibre',
+  'Jícama', 'Kale', 'Kohlrabi', 'Lechuga', 'Lenteja', 'Lilium', 'Lima', 'Limonium', 'Limón',
+  'Limón real', 'Litchi', 'Macadamia', 'Maguey', 'Maguey forrajero', 'Maguey mixiotero',
+  'Maguey pulquero (miles de lts.)', 'Malanga', 'Mamey', 'Mandarina', 'Mango', 'Mangostán',
+  'Mano de león', 'Manzana', 'Manzanilla', 'Maracuyá', 'Marañón', 'Margarita',
+  'Maíz forrajero en verde', 'Maíz forrajero seco', 'Maíz grano', 'Mejorana', 'Melón',
+  'Melón amargo', 'Membrillo', 'Menta', 'Moringa', 'Nabo', 'Nabo forrajero', 'Nanche', 'Napa',
+  'Naranja', 'Nardo', 'Nochebuena', 'Noni', 'Nopal forrajero', 'Nopalitos', 'Nube', 'Nuez',
+  'Níspero', 'Okra (angú o gombo)', 'Orquídea', 'Orégano', 'Palma africana o de aceite',
+  'Palma camedor', 'Palma de ornato', 'Palma taco', 'Papa', 'Papaya', 'Pasto tapete (m2)',
+  'Pastos y praderas', 'Pensamiento', 'Pepino', 'Pera', 'Perejil', 'Persimonio', 'Perón',
+  'Petunia', 'Pimienta', 'Pipicha', 'Pistache', 'Pitahaya', 'Pitaya', 'Piña', 'Piñón',
+  'Plantero de tabaco', 'Plátano', 'Polar', 'Pon-pon', 'Poro (leek)', 'Pápalo', 'Quelite',
+  'Rambután', 'Romerito', 'Romero', 'Rosa', 'Rábano', 'Salvia', 'Sandía', 'Saramuyo',
+  'Shangai-bock-choy', 'Shop suey', 'Solidago', 'Sorgo escobero', 'Sorgo forrajero achicalado',
+  'Sorgo forrajero en verde', 'Sorgo forrajero seco', 'Sorgo grano', 'Soya', 'Statice', 'Stevia',
+  'Sábila', 'Tabaco', 'Tamarindo', 'Tangelo', 'Tangerina', 'Tarragón', 'Tejocote', 'Terciopelo',
+  'Tomate rojo (jitomate)', 'Tomate verde', 'Tomillo', 'Toronja (pomelo)', 'Trigo forrajero verde',
+  'Trigo grano', 'Triticale forrajero en verde', 'Triticale grano', 'Trébol', 'Tulipán holandés',
+  'Tuna', 'Té limón', 'Uva', 'Vainilla', 'Verdolaga', 'Yu-choy', 'Yuca alimenticia', 'Zanahoria',
+  'Zapote', 'Zapupe', 'Zarzamora', 'Zempoalxochitl', 'Árbol de navidad',
 ];
 
 export function addCrops(rows) {
