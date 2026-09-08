@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '../theme';
 
 const TABS = [
   { key: 'buscar', label: 'Buscar', icon: 'search' },
@@ -17,8 +17,6 @@ export default function FloatingTabBar({ activeTab, onChange }) {
   return (
     <View style={[styles.wrap, { bottom: Math.max(insets.bottom - 20, 4) }]} pointerEvents="box-none">
       <View style={styles.pill}>
-        <BlurView intensity={65} tint="dark" style={StyleSheet.absoluteFillObject} />
-        <View style={styles.darken} />
         <View style={styles.row}>
           {TABS.map((t) => {
             const active = activeTab === t.key;
@@ -37,7 +35,7 @@ export default function FloatingTabBar({ activeTab, onChange }) {
                   <Ionicons
                     name={iconName}
                     size={20}
-                    color={active ? '#FFFFFF' : 'rgba(255,255,255,0.62)'}
+                    color={active ? colors.greenDeep : colors.inkSoft}
                   />
                   <Text style={[styles.label, active && styles.labelActive]} numberOfLines={1}>
                     {t.label}
@@ -58,19 +56,19 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
   },
+  // Casi opaco: deja entrever el contenido sin comprometer la lectura.
+  // rgba de colors.paperRaised (#F6F2E6).
   pill: {
     borderRadius: 32,
     overflow: 'hidden',
-    backgroundColor: Platform.OS === 'android' ? 'rgba(18,17,13,0.92)' : 'transparent',
+    backgroundColor: 'rgba(246,242,230,0.80)',
+    borderWidth: 1,
+    borderColor: colors.line,
     shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 14,
-  },
-  darken: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(20,18,14,0.38)',
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 12,
   },
   row: {
     flexDirection: 'row',
@@ -91,15 +89,16 @@ const styles = StyleSheet.create({
     minWidth: 66,
   },
   itemInnerActive: {
-    backgroundColor: 'rgba(255,255,255,0.20)',
+    backgroundColor: colors.greenTint,
   },
   label: {
     fontSize: 10.5,
     fontWeight: '600',
     marginTop: 3,
-    color: 'rgba(255,255,255,0.62)',
+    color: colors.inkSoft,
   },
   labelActive: {
-    color: '#FFFFFF',
+    color: colors.greenDeep,
+    fontWeight: '700',
   },
 });
