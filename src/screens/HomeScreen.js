@@ -3,6 +3,15 @@ import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-
 import { colors, categoryColors } from '../theme';
 import { CROPS, ALL_CROPS, PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
 
+// Quita acentos y pasa a minúsculas para que "maiz" encuentre "Maíz" y
+// "arana" encuentre "Araña roja".
+function normalize(text) {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+}
+
 function Pill({ label, active, accentColor, onPress }) {
   const activeStyle = active
     ? { backgroundColor: accentColor || colors.green, borderColor: accentColor || colors.green }
@@ -36,11 +45,11 @@ export default function HomeScreen({ onSearch }) {
   }, [showAllCrops]);
 
   const filteredCrops = useMemo(
-    () => cropPool.filter((c) => c.toLowerCase().includes(cropQuery.trim().toLowerCase())),
+    () => cropPool.filter((c) => normalize(c).includes(normalize(cropQuery.trim()))),
     [cropPool, cropQuery]
   );
   const filteredProblems = useMemo(
-    () => PROBLEMS.filter((p) => p.toLowerCase().includes(problemQuery.trim().toLowerCase())),
+    () => PROBLEMS.filter((p) => normalize(p).includes(normalize(problemQuery.trim()))),
     [problemQuery]
   );
 
