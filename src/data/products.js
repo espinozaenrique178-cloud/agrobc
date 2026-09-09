@@ -52,16 +52,73 @@ export function addCrops(rows) {
   });
 }
 
+// Destacados: los 4 genéricos y los 4 específicos que ya existían.
 export const PROBLEMS = [
   'Plaga', 'Enfermedad', 'Maleza', 'Nutrición',
   'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
 ];
+
+// Catálogo completo: selección curada de plagas, enfermedades, malezas y
+// deficiencias nutricionales comunes en cultivos de México. No existe una
+// fuente oficial única como SIAP para este caso.
+export const ALL_PROBLEMS = [
+  'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
+  'Minador de la hoja', 'Gusano cogollero', 'Gusano soldado', 'Palomilla dorso de diamante',
+  'Barrenador del tallo', 'Picudo del algodonero', 'Mosca de la fruta', 'Gallina ciega',
+  'Gusano de alambre', 'Chapulín', 'Cochinilla', 'Escama', 'Nematodos', 'Barrenador del fruto',
+  'Chinche apestosa', 'Rata de campo', 'Caracol y babosa', 'Ácaro blanco', 'Ácaro del bronceado',
+  'Diabrótica', 'Barrenador del brote', 'Psílido asiático de los cítricos',
+  'Barrenador del hueso (aguacate)', 'Falso medidor', 'Tizón tardío', 'Tizón temprano',
+  'Cenicilla (oídio)', 'Mildiu velloso', 'Roya', 'Antracnosis', 'Fusarium (marchitez)',
+  'Verticilosis', 'Pudrición de raíz', 'Pudrición gris (Botritis)', 'Mancha bacteriana',
+  'Cancro bacteriano', 'Virus del mosaico', 'Virus del rizado amarillo',
+  'Damping-off (ahogamiento de plántula)', 'Carbón', 'Huanglongbing (dragón amarillo)', 'Sarna',
+  'Zacate Johnson', 'Coquillo (coyolillo)', 'Correhuela', 'Zacate pata de gallina',
+  'Diente de león', 'Quelite cenizo', 'Campanilla (Ipomoea)', 'Golondrina (lechosa)', 'Malva',
+  'Zacate Bermuda', 'Toloache', 'Rábano silvestre', 'Cardo', 'Trompillo',
+  'Deficiencia de nitrógeno', 'Deficiencia de fósforo', 'Deficiencia de potasio',
+  'Deficiencia de calcio', 'Deficiencia de magnesio', 'Deficiencia de azufre',
+  'Deficiencia de hierro', 'Deficiencia de zinc', 'Deficiencia de boro',
+  'Deficiencia de manganeso', 'Deficiencia de cobre', 'Deficiencia de molibdeno',
+];
+
+const PROBLEM_CATEGORY_ADDITIONS = {
+  'Minador de la hoja': 'plaga', 'Gusano cogollero': 'plaga', 'Gusano soldado': 'plaga',
+  'Palomilla dorso de diamante': 'plaga', 'Barrenador del tallo': 'plaga',
+  'Picudo del algodonero': 'plaga', 'Mosca de la fruta': 'plaga', 'Gallina ciega': 'plaga',
+  'Gusano de alambre': 'plaga', 'Chapulín': 'plaga', 'Cochinilla': 'plaga', 'Escama': 'plaga',
+  'Nematodos': 'plaga', 'Barrenador del fruto': 'plaga', 'Chinche apestosa': 'plaga',
+  'Rata de campo': 'plaga', 'Caracol y babosa': 'plaga', 'Ácaro blanco': 'plaga',
+  'Ácaro del bronceado': 'plaga', 'Diabrótica': 'plaga', 'Barrenador del brote': 'plaga',
+  'Psílido asiático de los cítricos': 'plaga', 'Barrenador del hueso (aguacate)': 'plaga',
+  'Falso medidor': 'plaga',
+  'Tizón tardío': 'enfermedad', 'Tizón temprano': 'enfermedad', 'Cenicilla (oídio)': 'enfermedad',
+  'Mildiu velloso': 'enfermedad', 'Roya': 'enfermedad', 'Antracnosis': 'enfermedad',
+  'Fusarium (marchitez)': 'enfermedad', 'Verticilosis': 'enfermedad',
+  'Pudrición de raíz': 'enfermedad', 'Pudrición gris (Botritis)': 'enfermedad',
+  'Mancha bacteriana': 'enfermedad', 'Cancro bacteriano': 'enfermedad',
+  'Virus del mosaico': 'enfermedad', 'Virus del rizado amarillo': 'enfermedad',
+  'Damping-off (ahogamiento de plántula)': 'enfermedad', 'Carbón': 'enfermedad',
+  'Huanglongbing (dragón amarillo)': 'enfermedad', 'Sarna': 'enfermedad',
+  'Zacate Johnson': 'maleza', 'Coquillo (coyolillo)': 'maleza', 'Correhuela': 'maleza',
+  'Zacate pata de gallina': 'maleza', 'Diente de león': 'maleza', 'Quelite cenizo': 'maleza',
+  'Campanilla (Ipomoea)': 'maleza', 'Golondrina (lechosa)': 'maleza', 'Malva': 'maleza',
+  'Zacate Bermuda': 'maleza', 'Toloache': 'maleza', 'Rábano silvestre': 'maleza',
+  'Cardo': 'maleza', 'Trompillo': 'maleza',
+  'Deficiencia de nitrógeno': 'nutricion', 'Deficiencia de fósforo': 'nutricion',
+  'Deficiencia de potasio': 'nutricion', 'Deficiencia de calcio': 'nutricion',
+  'Deficiencia de magnesio': 'nutricion', 'Deficiencia de azufre': 'nutricion',
+  'Deficiencia de hierro': 'nutricion', 'Deficiencia de zinc': 'nutricion',
+  'Deficiencia de boro': 'nutricion', 'Deficiencia de manganeso': 'nutricion',
+  'Deficiencia de cobre': 'nutricion', 'Deficiencia de molibdeno': 'nutricion',
+};
 
 export const CATEGORY_BY_PROBLEM = {
   Plaga: 'plaga', 'Mosca blanca': 'plaga', Pulgón: 'plaga', 'Araña roja': 'plaga', Trips: 'plaga',
   Enfermedad: 'enfermedad',
   Maleza: 'maleza',
   Nutrición: 'nutricion',
+  ...PROBLEM_CATEGORY_ADDITIONS,
 };
 
 export const CATEGORY_LABEL = {

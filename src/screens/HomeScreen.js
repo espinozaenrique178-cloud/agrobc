@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { colors, categoryColors } from '../theme';
-import { CROPS, ALL_CROPS, PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
+import { CROPS, ALL_CROPS, PROBLEMS, ALL_PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
 
 // Quita acentos y pasa a minúsculas para que "maiz" encuentre "Maíz" y
 // "arana" encuentre "Araña roja".
@@ -36,6 +36,7 @@ export default function HomeScreen({ onSearch }) {
   const [crop, setCrop] = useState('Tomate');
   const [problem, setProblem] = useState('Plaga');
   const [showAllCrops, setShowAllCrops] = useState(false);
+  const [showAllProblems, setShowAllProblems] = useState(false);
 
   // En "todos" se unen destacados y catálogo completo: así no desaparece
   // ningún cultivo agregado desde el panel de admin (addCrops los mete en CROPS).
@@ -44,13 +45,18 @@ export default function HomeScreen({ onSearch }) {
     return Array.from(new Set([...CROPS, ...ALL_CROPS])).sort((a, b) => a.localeCompare(b, 'es'));
   }, [showAllCrops]);
 
+  const problemPool = useMemo(() => {
+    if (!showAllProblems) return PROBLEMS;
+    return Array.from(new Set([...PROBLEMS, ...ALL_PROBLEMS])).sort((a, b) => a.localeCompare(b, 'es'));
+  }, [showAllProblems]);
+
   const filteredCrops = useMemo(
     () => cropPool.filter((c) => normalize(c).includes(normalize(cropQuery.trim()))),
     [cropPool, cropQuery]
   );
   const filteredProblems = useMemo(
-    () => PROBLEMS.filter((p) => normalize(p).includes(normalize(problemQuery.trim()))),
-    [problemQuery]
+    () => problemPool.filter((p) => normalize(p).includes(normalize(problemQuery.trim()))),
+    [problemPool, problemQuery]
   );
 
   function pickCrop(value) {
@@ -128,7 +134,22 @@ export default function HomeScreen({ onSearch }) {
               <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
             );
           })}
+          <Pressable
+            onPress={() => setShowAllProblems((v) => !v)}
+            style={({ pressed }) => [styles.pill, styles.morePill, pressed && { opacity: 0.7 }]}
+            accessibilityRole="button"
+            accessibilityLabel={showAllProblems ? 'Ver solo problemas destacados' : 'Ver todos los problemas'}
+          >
+            <Text style={styles.morePillText}>
+              {showAllProblems ? '← Destacados' : '··· Ver todos'}
+            </Text>
+          </Pressable>
         </View>
+        {showAllProblems && (
+          <Text style={styles.catalogNote}>
+            Catálogo completo ({problemPool.length} problemas) — usa el buscador de arriba para filtrar.
+          </Text>
+        )}
         {filteredProblems.length === 0 && (
           <Text style={styles.emptyNote}>Sin coincidencias — se usará "{problemQuery}" como problema escrito.</Text>
         )}
