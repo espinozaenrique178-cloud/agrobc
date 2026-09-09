@@ -91,21 +91,34 @@ export default function HomeScreen({ onSearch }) {
             if (text.trim().length > 0) setCrop(text.trim());
           }}
         />
-        <View style={styles.pillRow}>
-          {filteredCrops.map((c) => (
-            <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
-          ))}
-          <Pressable
-            onPress={() => setShowAllCrops((v) => !v)}
-            style={({ pressed }) => [styles.pill, styles.morePill, pressed && { opacity: 0.7 }]}
-            accessibilityRole="button"
-            accessibilityLabel={showAllCrops ? 'Ver solo cultivos destacados' : 'Ver todos los cultivos'}
+        {showAllCrops ? (
+          <ScrollView
+            style={styles.pillScrollBox}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator
+            contentContainerStyle={styles.pillRow}
           >
-            <Text style={styles.morePillText}>
-              {showAllCrops ? '← Destacados' : '··· Ver todos'}
-            </Text>
-          </Pressable>
-        </View>
+            {filteredCrops.map((c) => (
+              <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.pillRow}>
+            {filteredCrops.map((c) => (
+              <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
+            ))}
+          </View>
+        )}
+        <Pressable
+          onPress={() => setShowAllCrops((v) => !v)}
+          style={({ pressed }) => [styles.pill, styles.morePill, styles.toggleStandalone, pressed && { opacity: 0.7 }]}
+          accessibilityRole="button"
+          accessibilityLabel={showAllCrops ? 'Ver solo cultivos destacados' : 'Ver todos los cultivos'}
+        >
+          <Text style={styles.morePillText}>
+            {showAllCrops ? '← Destacados' : '··· Ver todos'}
+          </Text>
+        </Pressable>
         {showAllCrops && (
           <Text style={styles.catalogNote}>
             Catálogo completo ({cropPool.length} cultivos) — usa el buscador de arriba para filtrar.
@@ -126,25 +139,42 @@ export default function HomeScreen({ onSearch }) {
             if (text.trim().length > 0) setProblem(text.trim());
           }}
         />
-        <View style={styles.pillRow}>
-          {filteredProblems.map((p) => {
-            const cat = CATEGORY_BY_PROBLEM[p];
-            const accent = cat ? categoryColors[cat].main : colors.green;
-            return (
-              <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
-            );
-          })}
-          <Pressable
-            onPress={() => setShowAllProblems((v) => !v)}
-            style={({ pressed }) => [styles.pill, styles.morePill, pressed && { opacity: 0.7 }]}
-            accessibilityRole="button"
-            accessibilityLabel={showAllProblems ? 'Ver solo problemas destacados' : 'Ver todos los problemas'}
+        {showAllProblems ? (
+          <ScrollView
+            style={styles.pillScrollBox}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator
+            contentContainerStyle={styles.pillRow}
           >
-            <Text style={styles.morePillText}>
-              {showAllProblems ? '← Destacados' : '··· Ver todos'}
-            </Text>
-          </Pressable>
-        </View>
+            {filteredProblems.map((p) => {
+              const cat = CATEGORY_BY_PROBLEM[p];
+              const accent = cat ? categoryColors[cat].main : colors.green;
+              return (
+                <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
+              );
+            })}
+          </ScrollView>
+        ) : (
+          <View style={styles.pillRow}>
+            {filteredProblems.map((p) => {
+              const cat = CATEGORY_BY_PROBLEM[p];
+              const accent = cat ? categoryColors[cat].main : colors.green;
+              return (
+                <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
+              );
+            })}
+          </View>
+        )}
+        <Pressable
+          onPress={() => setShowAllProblems((v) => !v)}
+          style={({ pressed }) => [styles.pill, styles.morePill, styles.toggleStandalone, pressed && { opacity: 0.7 }]}
+          accessibilityRole="button"
+          accessibilityLabel={showAllProblems ? 'Ver solo problemas destacados' : 'Ver todos los problemas'}
+        >
+          <Text style={styles.morePillText}>
+            {showAllProblems ? '← Destacados' : '··· Ver todos'}
+          </Text>
+        </Pressable>
         {showAllProblems && (
           <Text style={styles.catalogNote}>
             Catálogo completo ({problemPool.length} problemas) — usa el buscador de arriba para filtrar.
@@ -187,6 +217,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10, fontSize: 15, color: colors.ink, backgroundColor: colors.paper, marginBottom: 10,
   },
   pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  // Catálogo desplegado: altura fija con scroll propio, para no alargar toda
+  // la pantalla con 250+ pills — el botón de volver queda siempre visible debajo.
+  pillScrollBox: { maxHeight: 260 },
   pill: {
     paddingHorizontal: 17, paddingVertical: 11, borderRadius: 24,
     borderWidth: 1.5, borderColor: colors.line, backgroundColor: colors.paper,
@@ -194,6 +227,7 @@ const styles = StyleSheet.create({
   pillText: { fontSize: 14.5, color: colors.inkSoft },
   pillTextActive: { color: '#F8F5EA', fontWeight: '700' },
   morePill: { borderStyle: 'dashed', borderColor: colors.green, backgroundColor: colors.greenTint },
+  toggleStandalone: { alignSelf: 'flex-start', marginTop: 10 },
   morePillText: { fontSize: 14.5, color: colors.greenDeep, fontWeight: '700' },
   catalogNote: { fontSize: 12.5, color: colors.stone, marginTop: 8 },
   emptyNote: { fontSize: 12.5, color: colors.terra, marginTop: 6 },
