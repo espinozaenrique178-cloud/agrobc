@@ -1,7 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { colors, categoryColors } from '../theme';
-import { CROPS, PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
+import { CROPS, ALL_CROPS, PROBLEMS, ALL_PROBLEMS, CATEGORY_BY_PROBLEM } from '../data/products';
+
+// Quita acentos y pasa a minúsculas para que "maiz" encuentre "Maíz" y
+// "arana" encuentre "Araña roja".
+function normalize(text) {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+}
 
 function Pill({ label, active, accentColor, onPress }) {
   const activeStyle = active
@@ -26,14 +35,28 @@ export default function HomeScreen({ onSearch }) {
   const [problemQuery, setProblemQuery] = useState('');
   const [crop, setCrop] = useState('Tomate');
   const [problem, setProblem] = useState('Plaga');
+  const [showAllCrops, setShowAllCrops] = useState(false);
+  const [showAllProblems, setShowAllProblems] = useState(false);
+
+  // En "todos" se unen destacados y catálogo completo: así no desaparece
+  // ningún cultivo agregado desde el panel de admin (addCrops los mete en CROPS).
+  const cropPool = useMemo(() => {
+    if (!showAllCrops) return CROPS;
+    return Array.from(new Set([...CROPS, ...ALL_CROPS])).sort((a, b) => a.localeCompare(b, 'es'));
+  }, [showAllCrops]);
+
+  const problemPool = useMemo(() => {
+    if (!showAllProblems) return PROBLEMS;
+    return Array.from(new Set([...PROBLEMS, ...ALL_PROBLEMS])).sort((a, b) => a.localeCompare(b, 'es'));
+  }, [showAllProblems]);
 
   const filteredCrops = useMemo(
-    () => CROPS.filter((c) => c.toLowerCase().includes(cropQuery.trim().toLowerCase())),
-    [cropQuery]
+    () => cropPool.filter((c) => normalize(c).includes(normalize(cropQuery.trim()))),
+    [cropPool, cropQuery]
   );
   const filteredProblems = useMemo(
-    () => PROBLEMS.filter((p) => p.toLowerCase().includes(problemQuery.trim().toLowerCase())),
-    [problemQuery]
+    () => problemPool.filter((p) => normalize(p).includes(normalize(problemQuery.trim()))),
+    [problemPool, problemQuery]
   );
 
   function pickCrop(value) {
@@ -68,11 +91,39 @@ export default function HomeScreen({ onSearch }) {
             if (text.trim().length > 0) setCrop(text.trim());
           }}
         />
-        <View style={styles.pillRow}>
-          {filteredCrops.map((c) => (
-            <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
-          ))}
-        </View>
+        {showAllCrops ? (
+          <ScrollView
+            style={styles.pillScrollBox}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator
+            contentContainerStyle={styles.pillRow}
+          >
+            {filteredCrops.map((c) => (
+              <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.pillRow}>
+            {filteredCrops.map((c) => (
+              <Pill key={c} label={c} active={crop === c} accentColor={colors.green} onPress={() => pickCrop(c)} />
+            ))}
+          </View>
+        )}
+        <Pressable
+          onPress={() => setShowAllCrops((v) => !v)}
+          style={({ pressed }) => [styles.pill, styles.morePill, styles.toggleStandalone, pressed && { opacity: 0.7 }]}
+          accessibilityRole="button"
+          accessibilityLabel={showAllCrops ? 'Ver solo cultivos destacados' : 'Ver todos los cultivos'}
+        >
+          <Text style={styles.morePillText}>
+            {showAllCrops ? '← Destacados' : '··· Ver todos'}
+          </Text>
+        </Pressable>
+        {showAllCrops && (
+          <Text style={styles.catalogNote}>
+            Catálogo completo ({cropPool.length} cultivos) — usa el buscador de arriba para filtrar.
+          </Text>
+        )}
         {filteredCrops.length === 0 && (
           <Text style={styles.emptyNote}>Sin coincidencias — se usará "{cropQuery}" como cultivo escrito.</Text>
         )}
@@ -88,15 +139,47 @@ export default function HomeScreen({ onSearch }) {
             if (text.trim().length > 0) setProblem(text.trim());
           }}
         />
-        <View style={styles.pillRow}>
-          {filteredProblems.map((p) => {
-            const cat = CATEGORY_BY_PROBLEM[p];
-            const accent = cat ? categoryColors[cat].main : colors.green;
-            return (
-              <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
-            );
-          })}
-        </View>
+        {showAllProblems ? (
+          <ScrollView
+            style={styles.pillScrollBox}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator
+            contentContainerStyle={styles.pillRow}
+          >
+            {filteredProblems.map((p) => {
+              const cat = CATEGORY_BY_PROBLEM[p];
+              const accent = cat ? categoryColors[cat].main : colors.green;
+              return (
+                <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
+              );
+            })}
+          </ScrollView>
+        ) : (
+          <View style={styles.pillRow}>
+            {filteredProblems.map((p) => {
+              const cat = CATEGORY_BY_PROBLEM[p];
+              const accent = cat ? categoryColors[cat].main : colors.green;
+              return (
+                <Pill key={p} label={p} active={problem === p} accentColor={accent} onPress={() => pickProblem(p)} />
+              );
+            })}
+          </View>
+        )}
+        <Pressable
+          onPress={() => setShowAllProblems((v) => !v)}
+          style={({ pressed }) => [styles.pill, styles.morePill, styles.toggleStandalone, pressed && { opacity: 0.7 }]}
+          accessibilityRole="button"
+          accessibilityLabel={showAllProblems ? 'Ver solo problemas destacados' : 'Ver todos los problemas'}
+        >
+          <Text style={styles.morePillText}>
+            {showAllProblems ? '← Destacados' : '··· Ver todos'}
+          </Text>
+        </Pressable>
+        {showAllProblems && (
+          <Text style={styles.catalogNote}>
+            Catálogo completo ({problemPool.length} problemas) — usa el buscador de arriba para filtrar.
+          </Text>
+        )}
         {filteredProblems.length === 0 && (
           <Text style={styles.emptyNote}>Sin coincidencias — se usará "{problemQuery}" como problema escrito.</Text>
         )}
@@ -134,12 +217,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10, fontSize: 15, color: colors.ink, backgroundColor: colors.paper, marginBottom: 10,
   },
   pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  // Catálogo desplegado: altura fija con scroll propio, para no alargar toda
+  // la pantalla con 250+ pills — el botón de volver queda siempre visible debajo.
+  pillScrollBox: { maxHeight: 260 },
   pill: {
     paddingHorizontal: 17, paddingVertical: 11, borderRadius: 24,
     borderWidth: 1.5, borderColor: colors.line, backgroundColor: colors.paper,
   },
   pillText: { fontSize: 14.5, color: colors.inkSoft },
   pillTextActive: { color: '#F8F5EA', fontWeight: '700' },
+  morePill: { borderStyle: 'dashed', borderColor: colors.green, backgroundColor: colors.greenTint },
+  toggleStandalone: { alignSelf: 'flex-start', marginTop: 10 },
+  morePillText: { fontSize: 14.5, color: colors.greenDeep, fontWeight: '700' },
+  catalogNote: { fontSize: 12.5, color: colors.stone, marginTop: 8 },
   emptyNote: { fontSize: 12.5, color: colors.terra, marginTop: 6 },
   searchBtn: {
     marginTop: 18, borderRadius: 8,

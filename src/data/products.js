@@ -1,6 +1,49 @@
+// Destacados: los cultivos relevantes de Baja California, que se muestran
+// por defecto en el selector. addCrops() suma aquí los que vienen de Supabase.
 export const CROPS = [
   'Tomate', 'Fresa', 'Trigo', 'Lechuga', 'Pepino', 'Vid',
   'Chile', 'Cebolla', 'Brócoli', 'Aguacate', 'Espárrago', 'Alfalfa',
+];
+
+// Catálogo completo, depurado de datos oficiales de SIAP (Servicio de
+// Información Agroalimentaria y Pesquera). Un mismo producto puede usarse en
+// cultivos que no se dan en la localidad del usuario, así que el selector
+// permite llegar a cualquiera de estos, no solo a los destacados.
+export const ALL_CROPS = [
+  'Aceituna', 'Acelga', 'Achiote', 'Agapando', 'Agave', 'Aguacate', 'Ajo', 'Ajonjolí', 'Albahaca',
+  'Albricia', 'Alcachofa', 'Alcatraz', 'Alfalfa', 'Algarrobo', 'Algodón hueso', 'Alhelí',
+  'Alpiste', 'Alstroemeria', 'Amaranto', 'Anís', 'Anturios', 'Apio', 'Arándano',
+  'Árbol de navidad', 'Aretillo', 'Arrayán', 'Arroz palay', 'Arvejón', 'Aster', 'Ave del paraíso',
+  'Avena', 'Baby back choi', 'Bambú', 'Bangaña', 'Begonia', 'Belén', 'Berenjena', 'Betabel',
+  'Boi choi', 'Brócoli', 'Cacahuate', 'Cacao', 'Café cereza', 'Caimito', 'Calabacita', 'Calabaza',
+  'Calabaza semilla o chihua', 'Calancoe', 'Camote', 'Caña de azúcar', 'Canola', 'Capulín',
+  'Carambolo', 'Cártamo', 'Cebada', 'Cebolla', 'Centeno grano', 'Cereza', 'Chabacano', 'Chayote',
+  'Chía', 'Chícharo', 'Chilacayote', 'Chile seco', 'Chile verde', 'Chirimoya', 'Chives',
+  'Cilantro', 'Cineraria', 'Ciruela', 'Clavel', 'Clyptoria', 'Coco fruta', 'Col (repollo)',
+  'Col de bruselas', 'Coliflor', 'Comino', 'Copra', 'Coquia', 'Crisantemo', 'Cyclamen', 'Dalia',
+  'Dátil', 'Dólar', 'Durazno', 'Ebo (janamargo o veza)', 'Ejote', 'Elote', 'Eneldo', 'Epazote',
+  'Espárrago', 'Espinaca', 'Estropajo', 'Eucalipto', 'Flor cera', 'Flor perrito', 'Frambuesa',
+  'Fresa', 'Frijol', 'Frijol x pelón', 'Gai lan (kay laan)', 'Garbanzo', 'Geranio', 'Gerbera',
+  'Girasol', 'Girasol flor', 'Gladiola', 'Granada', 'Guaje', 'Guamúchil', 'Guanábana', 'Guayaba',
+  'Haba grano', 'Haba verde', 'Helecho', 'Henequén', 'Hierbabuena', 'Higo',
+  'Hoja de plátano (belillo)', 'Hortensia', 'Huauzontle', 'Hule hevea', 'Inmortal',
+  'Jaca (jackfruit)', 'Jamaica', 'Jatropha', 'Jengibre', 'Jícama', 'Kale', 'Kohlrabi', 'Lechuga',
+  'Lenteja', 'Lilium', 'Lima', 'Limón', 'Limón real', 'Limonium', 'Litchi', 'Macadamia', 'Maguey',
+  'Maguey forrajero', 'Maguey mixiotero', 'Maguey pulquero (miles de lts.)', 'Maíz', 'Malanga',
+  'Mamey', 'Mandarina', 'Mango', 'Mangostán', 'Mano de león', 'Manzana', 'Manzanilla', 'Maracuyá',
+  'Marañón', 'Margarita', 'Mejorana', 'Melón', 'Melón amargo', 'Membrillo', 'Menta', 'Moringa',
+  'Nabo', 'Nanche', 'Napa', 'Naranja', 'Nardo', 'Níspero', 'Nochebuena', 'Noni', 'Nopal forrajero',
+  'Nopalitos', 'Nube', 'Nuez', 'Okra (angú o gombo)', 'Orégano', 'Orquídea',
+  'Palma africana o de aceite', 'Palma camedor', 'Palma de ornato', 'Palma taco', 'Papa', 'Pápalo',
+  'Papaya', 'Pasto tapete (m2)', 'Pastos y praderas', 'Pensamiento', 'Pepino', 'Pera', 'Perejil',
+  'Perón', 'Persimonio', 'Petunia', 'Pimienta', 'Piña', 'Piñón', 'Pipicha', 'Pistache', 'Pitahaya',
+  'Pitaya', 'Plantero de tabaco', 'Plátano', 'Polar', 'Pon-pon', 'Poro (leek)', 'Quelite',
+  'Rábano', 'Rambután', 'Romerito', 'Romero', 'Rosa', 'Sábila', 'Salvia', 'Sandía', 'Saramuyo',
+  'Shangai-bock-choy', 'Shop suey', 'Solidago', 'Sorgo', 'Sorgo escobero', 'Soya', 'Statice',
+  'Stevia', 'Tabaco', 'Tamarindo', 'Tangelo', 'Tangerina', 'Tarragón', 'Té limón', 'Tejocote',
+  'Terciopelo', 'Tomate rojo (jitomate)', 'Tomate verde', 'Tomillo', 'Toronja (pomelo)', 'Trébol',
+  'Trigo', 'Triticale', 'Tulipán holandés', 'Tuna', 'Uva', 'Vainilla', 'Verdolaga', 'Yu-choy',
+  'Yuca alimenticia', 'Zanahoria', 'Zapote', 'Zapupe', 'Zarzamora', 'Zempoalxochitl',
 ];
 
 export function addCrops(rows) {
@@ -9,16 +52,73 @@ export function addCrops(rows) {
   });
 }
 
+// Destacados: los 4 genéricos y los 4 específicos que ya existían.
 export const PROBLEMS = [
   'Plaga', 'Enfermedad', 'Maleza', 'Nutrición',
   'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
 ];
+
+// Catálogo completo: selección curada de plagas, enfermedades, malezas y
+// deficiencias nutricionales comunes en cultivos de México. No existe una
+// fuente oficial única como SIAP para este caso.
+export const ALL_PROBLEMS = [
+  'Plaga', 'Enfermedad', 'Maleza', 'Nutrición', 'Mosca blanca', 'Pulgón', 'Araña roja', 'Trips',
+  'Minador de la hoja', 'Gusano cogollero', 'Gusano soldado', 'Palomilla dorso de diamante',
+  'Barrenador del tallo', 'Picudo del algodonero', 'Mosca de la fruta', 'Gallina ciega',
+  'Gusano de alambre', 'Chapulín', 'Cochinilla', 'Escama', 'Nematodos', 'Barrenador del fruto',
+  'Chinche apestosa', 'Rata de campo', 'Caracol y babosa', 'Ácaro blanco', 'Ácaro del bronceado',
+  'Diabrótica', 'Barrenador del brote', 'Psílido asiático de los cítricos',
+  'Barrenador del hueso (aguacate)', 'Falso medidor', 'Tizón tardío', 'Tizón temprano',
+  'Cenicilla (oídio)', 'Mildiu velloso', 'Roya', 'Antracnosis', 'Fusarium (marchitez)',
+  'Verticilosis', 'Pudrición de raíz', 'Pudrición gris (Botritis)', 'Mancha bacteriana',
+  'Cancro bacteriano', 'Virus del mosaico', 'Virus del rizado amarillo',
+  'Damping-off (ahogamiento de plántula)', 'Carbón', 'Huanglongbing (dragón amarillo)', 'Sarna',
+  'Zacate Johnson', 'Coquillo (coyolillo)', 'Correhuela', 'Zacate pata de gallina',
+  'Diente de león', 'Quelite cenizo', 'Campanilla (Ipomoea)', 'Golondrina (lechosa)', 'Malva',
+  'Zacate Bermuda', 'Toloache', 'Rábano silvestre', 'Cardo', 'Trompillo',
+  'Deficiencia de nitrógeno', 'Deficiencia de fósforo', 'Deficiencia de potasio',
+  'Deficiencia de calcio', 'Deficiencia de magnesio', 'Deficiencia de azufre',
+  'Deficiencia de hierro', 'Deficiencia de zinc', 'Deficiencia de boro',
+  'Deficiencia de manganeso', 'Deficiencia de cobre', 'Deficiencia de molibdeno',
+];
+
+const PROBLEM_CATEGORY_ADDITIONS = {
+  'Minador de la hoja': 'plaga', 'Gusano cogollero': 'plaga', 'Gusano soldado': 'plaga',
+  'Palomilla dorso de diamante': 'plaga', 'Barrenador del tallo': 'plaga',
+  'Picudo del algodonero': 'plaga', 'Mosca de la fruta': 'plaga', 'Gallina ciega': 'plaga',
+  'Gusano de alambre': 'plaga', 'Chapulín': 'plaga', 'Cochinilla': 'plaga', 'Escama': 'plaga',
+  'Nematodos': 'plaga', 'Barrenador del fruto': 'plaga', 'Chinche apestosa': 'plaga',
+  'Rata de campo': 'plaga', 'Caracol y babosa': 'plaga', 'Ácaro blanco': 'plaga',
+  'Ácaro del bronceado': 'plaga', 'Diabrótica': 'plaga', 'Barrenador del brote': 'plaga',
+  'Psílido asiático de los cítricos': 'plaga', 'Barrenador del hueso (aguacate)': 'plaga',
+  'Falso medidor': 'plaga',
+  'Tizón tardío': 'enfermedad', 'Tizón temprano': 'enfermedad', 'Cenicilla (oídio)': 'enfermedad',
+  'Mildiu velloso': 'enfermedad', 'Roya': 'enfermedad', 'Antracnosis': 'enfermedad',
+  'Fusarium (marchitez)': 'enfermedad', 'Verticilosis': 'enfermedad',
+  'Pudrición de raíz': 'enfermedad', 'Pudrición gris (Botritis)': 'enfermedad',
+  'Mancha bacteriana': 'enfermedad', 'Cancro bacteriano': 'enfermedad',
+  'Virus del mosaico': 'enfermedad', 'Virus del rizado amarillo': 'enfermedad',
+  'Damping-off (ahogamiento de plántula)': 'enfermedad', 'Carbón': 'enfermedad',
+  'Huanglongbing (dragón amarillo)': 'enfermedad', 'Sarna': 'enfermedad',
+  'Zacate Johnson': 'maleza', 'Coquillo (coyolillo)': 'maleza', 'Correhuela': 'maleza',
+  'Zacate pata de gallina': 'maleza', 'Diente de león': 'maleza', 'Quelite cenizo': 'maleza',
+  'Campanilla (Ipomoea)': 'maleza', 'Golondrina (lechosa)': 'maleza', 'Malva': 'maleza',
+  'Zacate Bermuda': 'maleza', 'Toloache': 'maleza', 'Rábano silvestre': 'maleza',
+  'Cardo': 'maleza', 'Trompillo': 'maleza',
+  'Deficiencia de nitrógeno': 'nutricion', 'Deficiencia de fósforo': 'nutricion',
+  'Deficiencia de potasio': 'nutricion', 'Deficiencia de calcio': 'nutricion',
+  'Deficiencia de magnesio': 'nutricion', 'Deficiencia de azufre': 'nutricion',
+  'Deficiencia de hierro': 'nutricion', 'Deficiencia de zinc': 'nutricion',
+  'Deficiencia de boro': 'nutricion', 'Deficiencia de manganeso': 'nutricion',
+  'Deficiencia de cobre': 'nutricion', 'Deficiencia de molibdeno': 'nutricion',
+};
 
 export const CATEGORY_BY_PROBLEM = {
   Plaga: 'plaga', 'Mosca blanca': 'plaga', Pulgón: 'plaga', 'Araña roja': 'plaga', Trips: 'plaga',
   Enfermedad: 'enfermedad',
   Maleza: 'maleza',
   Nutrición: 'nutricion',
+  ...PROBLEM_CATEGORY_ADDITIONS,
 };
 
 export const CATEGORY_LABEL = {
