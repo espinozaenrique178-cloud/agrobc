@@ -207,19 +207,3 @@ export function matchProducts(cropValue, problemValue) {
   });
   return out.slice(0, 3);
 }
-
-export const MANUFACTURERS = [
-  { name: 'Bayer', domain: 'bayer.com', categories: 'Insecticidas · Fungicidas' },
-  { name: 'Syngenta', domain: 'syngenta.com', categories: 'Insecticidas · Fungicidas · Herbicidas' },
-  { name: 'Corteva', domain: 'corteva.com', categories: 'Herbicidas · Insecticidas' },
-  { name: 'UPL', domain: 'upl-ltd.com', categories: 'Insecticidas · Fungicidas' },
-  { name: 'BASF', domain: 'agriculture.basf.com', categories: 'Fungicidas · Herbicidas' },
-  { name: 'Yara', domain: 'yara.com', categories: 'Nutrición vegetal' },
-  { name: 'ICL', domain: 'icl-group.com', categories: 'Nutrición vegetal' },
-  { name: 'SQM', domain: 'sqm.com', categories: 'Nutrición vegetal' },
-  { name: 'Haifa', domain: 'haifa-group.com', categories: 'Nutrición vegetal' },
-  { name: 'Mosaic', domain: 'mosaicco.com', categories: 'Nutrición vegetal' },
-  { name: 'Nutrien Ag Solutions', domain: 'nutrien.com', categories: 'Nutrición vegetal' },
-  { name: 'Compo Expert', domain: 'compo-expert.com', categories: 'Nutrición vegetal' },
-  { name: 'Van Iperen', domain: 'vaniperen.com', categories: 'Nutrición vegetal' },
-];
