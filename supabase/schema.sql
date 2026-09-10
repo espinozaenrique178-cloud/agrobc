@@ -410,3 +410,103 @@ where p.category = 'nutricion'
     where pd.producto_id = p.id
       and pd.distribuidor_id = (select id from public.distribuidores where name = 'Servicios NH3')
   );
+
+-- ============================================================
+-- 7) Catálogo de fertilizantes — Fertilizantes Tepeyac (ftepeyac.com.mx)
+--    Generado automáticamente (piloto: categoría "Fertilizantes sólidos",
+--    32 productos del sitio, extraídos el 10 de septiembre de 2026).
+--    Deduplicación: "YaraMila TRISTAR (15-15-15)" coincide en fabricante
+--    (Yara) + grado (15-15-15) con "Yara Mila 15-15-15" ya importado de
+--    Servicios NH3 — no se duplica el producto, solo se agrega Tepeyac
+--    como distribuidor adicional de ese mismo producto existente.
+--    Es seguro volver a correr: usa "where not exists" en todo.
+-- ============================================================
+
+insert into public.fabricantes (name)
+select * from (values
+  ('Agroindustrias del Balsas'),
+  ('BASF'),
+  ('EuroChem'),
+  ('Fertilizantes Tepeyac'),
+  ('Innophos'),
+  ('Manttra'),
+  ('Mejisulfatos'),
+  ('Mosaic'),
+  ('SQM'),
+  ('Tigsa'),
+  ('Yara')
+) as v(name)
+where not exists (select 1 from public.fabricantes f where f.name = v.name);
+
+insert into public.distribuidores (name)
+select * from (values ('Fertilizantes Tepeyac')) as v(name)
+where not exists (select 1 from public.distribuidores d where d.name = v.name);
+
+-- Productos nuevos (no coinciden fabricante+grado con nada ya existente)
+insert into public.productos (
+  name, mfg, type, ingredient, presentation, price, category, crops,
+  ficha_tecnica, fabricante_id, grado_formula, subcategoria,
+  n_pct, p_pct, k_pct, s_pct, ca_pct, mg_pct, otros_micronutrientes,
+  caracteristicas_fisicas, compatibilidad, incompatibilidad, uso_dosis,
+  notas, ficha_completa, verificar_con_proveedor
+)
+select
+  v.name, v.mfg, 'Fertilizante', v.grado_formula, v.presentation, 0, 'nutricion', '{any}'::text[],
+  v.ficha_tecnica, (select id from public.fabricantes f where f.name = v.mfg),
+  v.grado_formula, 'Fertilizantes sólidos',
+  v.n_pct, v.p_pct, v.k_pct, v.s_pct, v.ca_pct, v.mg_pct, v.otros_micronutrientes,
+  v.caracteristicas_fisicas, null, null, null,
+  v.notas, v.ficha_completa, v.verificar_con_proveedor
+from (values
+  ('Can estándar', 'EuroChem', '27-00-00', 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/CAN_27_MGO_FICHA_TECNICA.pdf', '27% (13,5% nítrico / 13,5% amoniacal)', null, null, null, null, null, null, 'Gránulos, densidad aparente 0,97 t/m3, tamaño 3,3-3,9mm, pH 7,0-7,5, humedad máx 0,5%', 'Ficha técnica de EuroChem Antwerpen N.V. (Bélgica), distribuida en España por EuroChem Agro Iberia; no es literatura propia de Tepeyac.', true, false),
+  ('Can granular envasado', 'EuroChem', '27-00-00', 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/CAN_27_MGO_FICHA_TECNICA.pdf', '27% (13,5% nítrico / 13,5% amoniacal)', null, null, null, null, null, null, 'Gránulos, densidad aparente 0,97 t/m3, tamaño 3,3-3,9mm, pH 7,0-7,5, humedad máx 0,5%', 'Comparte la misma ficha técnica que "Can estándar" (mismo grado 27-00-00) — presentaciones distintas del mismo producto.', true, false),
+  ('Cloruro de potasio soluble', 'Fertilizantes Tepeyac', null, 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Cloruro-de-potasio-ficha-tecnica.pdf', null, null, null, null, null, null, null, null, 'El PDF vinculado (Productos Químicos Mardupol, 2005) es solo texto de usos/ventajas, sin tabla de composición N-P-K-S. No se infirió el K2O típico de KCl (~60%) por no estar confirmado en esta ficha — verificar con el proveedor.', false, true),
+  ('DAP Fosfato diamónico', 'Fertilizantes Tepeyac', null, 'Sacos 25 Kg, 50 Kg, Granel', '', null, null, null, null, null, null, null, null, 'Sin ficha técnica en el sitio, solo Hoja de Seguridad (HDS-DAP-18-46.pdf, no revisada). El grado 18-46-0 es el estándar de mercado para DAP pero no se confirmó en documentación del proveedor — verificar.', false, true),
+  ('Fosfonitrato envasado', 'Fertilizantes Tepeyac', '33-3-0', 'Saco de polipropileno 50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/FT-Fosfonitrato.pdf', '33% (16,5% amoniacal / 16,5% nítrico)', '3% P2O5', null, null, null, null, null, 'Gránulos blanco grisáceo, 1,2-3,5mm, densidad 913-1000 kg/m3, solubilidad 200g/100ml a 20°C, pH 5,5-6,8, ángulo de reposo 30°', null, true, false),
+  ('K MAG envasado', 'Fertilizantes Tepeyac', '00-00-22-11Mg-22S', 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/K-mag-envasado-ficha-tecnica.pdf', '0%', '0%', '21,5-22% K2O', '21-22%', null, '17,5-18% MgO', null, 'Fórmula K2SO4.2MgSO4, densidad 1281-1506 kg/L, humedad crítica relativa 30°C: 62%, índice de salinidad 43', 'Ficha co-marcada DISAGRO/NutriFeed; no declara "fabricado por" explícito, se mantiene como Fertilizantes Tepeyac (según su propia página de producto).', true, false),
+  ('MAP 11 52 00', 'Mosaic', '11-52-00', 'Saco de 50 Kg', '', '11% (100% amoniacal)', '52% P2O5', null, null, null, null, null, null, 'Sin PDF de ficha técnica en el sitio (solo Hoja de Seguridad HDS-MAP-11-52-00.pdf, no revisada); grado tomado del propio nombre del producto en el catálogo.', true, false),
+  ('NUTRIDRIP MKP', 'Fertilizantes Tepeyac', '0-52-34', 'Saco de propileno 25 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/NUTRIDROP_MKP_ENVASADO_FICHA_TECNICA.pdf', '0%', '52% P2O5', '34% K2O', null, null, null, 'Fórmula KH2PO4 (Fosfato Monopotásico)', 'Sal de pequeños cristales, polvo blanco', null, true, false),
+  ('SAM granular', 'Fertilizantes Tepeyac', '20.5-00-00-24S', 'Saco de propileno 50 Kg, también a granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Sam-granular-ficha-tecnica.pdf', '21%', '0%', '0%', '24%', null, null, null, 'Sólido granulado (NH4)2SO4, higroscópico', null, true, false),
+  ('Sam STD estándar', 'Fertilizantes Tepeyac', '20.5-00-00-24S', 'Saco de propileno 50 Kg, también a granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Sam-std-envasado-ficha-tecnica.pdf', '20,5%', '0%', '0%', '24%', null, null, null, 'Sólido en polvo (NH4)2SO4, soluble en agua', null, true, false),
+  ('SOP Granular Envasado, sulfato de potasio', 'Fertilizantes Tepeyac', '0-0-50-18', 'Saco de propileno 50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/FICHA-TECNICA-SOP-Granular.pdf', '0%', '0%', '50% K2O', '18%', null, null, null, 'Finos cristales blancos, K2SO4, muy soluble en agua', null, true, false),
+  ('Sulfato de Potasio STD Envasado', 'Fertilizantes Tepeyac', '0-0-50-18', 'Saco de propileno 50 Kg, también a granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/SULFATO_POTASIO_STD_ENVASADO_FICHA_TECNICA.pdf', '0%', '0%', '50% K2O', '18%', null, null, null, 'Granular, K2SO4, blanco grisáceo, solubilidad 24,1 partes/100 partes de agua', null, true, false),
+  ('Sulfo Nitrato Envasado', 'Agroindustrias del Balsas', '33-00-00-2S', 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/sulfo_de_intrato_ficha_tecnica.pdf', '34,17% total (16,56% nítrico / 17,61% amoniacal)', '0%', '0%', '1,73% (SO4 5,20%)', null, null, 'Humedad 0,23%, granulometría 1-4mm 99%', null, 'Ficha con membrete de Agroindustrias del Balsas S.A. de C.V. (Lázaro Cárdenas, Michoacán, México) — no es literatura de Tepeyac.', true, false),
+  ('Ultra compost', 'Fertilizantes Tepeyac', null, 'Sacos de 50 Kg, Granel', '', null, null, null, null, null, null, null, 'Composta de gallinaza/pollinaza, sanitizada a 55°C+', 'El link de "Ficha técnica" en el sitio apunta de vuelta a la página de categoría (roto); solo hay Hoja de Seguridad.', false, false),
+  ('Urea Granular', 'Fertilizantes Tepeyac', '46-00-00', 'Saco de propileno 50 Kg, también a granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/ficha_tecnica_urea_granular.pdf', '46%', '0%', '0%', null, null, null, null, 'Granular 1-5mm, NH2CONH2, solubilidad 108 partes/100 partes de agua a 20°C, pH 8-9', null, true, false),
+  ('Urea prilada', 'Fertilizantes Tepeyac', '46-00-00', 'Saco de propileno 50 Kg, también a granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Urea-prilada-ficha-tecnica.pdf', '46%', '0%', '0%', null, null, null, null, 'Perdigones blancos 0,85-3,35mm, NH2CONH2, solubilidad 108 partes/100 partes de agua a 20°C, pH 8-9', null, true, false),
+  ('ASN 30-7 Envasado', 'Fertilizantes Tepeyac', '30-7 (interpretación no confirmada)', 'Saco de 50 Kg', '', null, null, null, null, null, null, null, null, 'Sin ficha técnica en el sitio (solo HDS, no revisada). Mezcla de Nitrato de Amonio + Sulfato de Amonio según descripción; el sitio declara "Fabricante: ASN 30:7", que repite el nombre del producto y no identifica una empresa real — verificar con el proveedor.', false, true),
+  ('Azufertil 2E', 'Manttra', null, 'Saco 50 Kg, Jumbo 1000/1250/1500 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/AZUFERTIL_2E_FICHA_TECNICA.pdf', null, null, null, '46% SO4', '29% CaO', null, null, 'Granulado esférico café, 90% entre 2-4mm, densidad 75 lb/cft, humedad <1,5%, resistencia >2kg/gránulo', null, true, false),
+  ('Azufertil 5E Zinc Boro', 'Tigsa', null, 'Saco de 50 Kg', '', null, null, null, null, null, null, 'Fuente de S, Ca, Mg, Zn y B (composición exacta no confirmada)', null, 'El link de "Ficha técnica" apunta de vuelta a la categoría (roto). El sitio declara fabricante "Tigsa", pero el producto hermano "Azufertil 2E" resultó ser de Manttra según su propia ficha — posible inconsistencia del sitio, verificar con el proveedor.', false, true),
+  ('Daphos Granular', 'Mejisulfatos', null, 'Saco de 50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/MEJI_DAPHOS_GRANULAR_FICHA_TECNICA.pdf', '0%', '25% P2O5', '0%', '3%', '35% CaO', '7% MgO', 'Silicio (SiO2) 22%', null, 'Ficha de la empresa colombiana Mejisulfatos (Reg. ICA 5929); el sitio de Tepeyac la listaba como fabricante "Mejidaphos" (nombre no exacto).', true, false),
+  ('Entec envasado', 'BASF', '26-00-00-32.5S', '25 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Entec-ficha-tecnica.pdf', '26% (7,5% nítrico / 18,5% amoniacal)', '0%', '0%', '32,5% SO3', null, null, 'DMPP (inhibidor de nitrificación) 0,8% sobre el N amoniacal', 'Densidad aparente 0,95 t/m3, granulometría 90% entre 2-5mm, tamaño medio 3,0-3,6mm', 'Fabricado por BASF SE (Alemania), importado a España por EuroChem Agro Iberia. El sitio de Tepeyac declara fabricante "EUROCHEM" — se usó BASF por ser quien fabrica según la propia ficha.', true, false),
+  ('Granumax 2.1 S', 'Tigsa', null, '50 Kg, Jumbo 1,2 TM, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Granumax-ficha-tecnica.pdf', null, null, null, '10% SO4', '28% CaO', '12% MgO', null, 'Granulado esférico café, 95% entre 2-4mm, poder de neutralización +110%', null, true, false),
+  ('Nitrofoska 16-16-16', 'EuroChem', '16-16-16', 'Saco de 50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/NITROFOSKA_EUROCHEM_-FICHA_TECNICA.pdf', '16% (8% nítrico / 8% amoniacal)', '16% P2O5', '16% K2O', null, null, null, null, null, 'Fórmula NPK base MOP (cloruro de potasio), a diferencia de Nitrofoska Perfect/Special que son base SOP.', true, false),
+  ('Nitrofoska MOP', 'EuroChem', null, '50 Kg', '', null, null, null, null, null, null, null, null, 'Sin ficha técnica ni hoja de seguridad enlazadas en el sitio para esta variante específica de la línea Nitrofoska — verificar grado exacto con el proveedor.', false, true),
+  ('Nitrofoska Perfect', 'EuroChem', '15-5-20-2Mg-20S', '50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Nitrofoska_perfect_ficha_tecnica.pdf', '15% (7% nítrico / 8% amoniacal)', '5% P2O5 (3,5% soluble en agua)', '20% K2O', '20% SO3 (16% soluble en agua)', null, '2% MgO (1,6% soluble en agua)', 'Boro 0,02%, Zinc 0,01%. Pobre en cloruro.', 'Densidad aparente 1,17 t/m3, granulometría 90% entre 2-5mm, humedad máx 1,5%', null, true, false),
+  ('Nitrofoska Special', 'EuroChem', '12-12-17-2Mg-20S', '50 Kg', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Nitrofoska_Special_ficha_tecnica.pdf', '12% (5% nítrico / 7% amoniacal)', '12% P2O5 (7,8% soluble en agua)', '17% K2O', '20% SO3 (16% soluble en agua)', null, '2% MgO (1,6% soluble en agua)', 'Boro 0,02%, Zinc 0,01%. Pobre en cloruro.', 'Densidad aparente 1,17 t/m3, granulometría 90% entre 2-5mm, humedad máx 1,5%', null, true, false),
+  ('Nutrilake Nitrogenado', 'SQM', null, '25 Kg', '', null, null, null, null, null, null, null, null, 'Producto para tratamiento de cuerpos de agua (promotor de fitoplancton, oxigenador), no un fertilizante NPK de cultivo convencional — se importó porque el sitio lo lista dentro de "Fertilizantes sólidos", pero probablemente no debería recomendarse como los demás. Sin ficha de composición, solo Hoja de Seguridad.', false, true),
+  ('Superfosfato Triple granulado', 'Innophos', '0-46-0', 'Sacos 25 Kg, 50 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Superfosfato-ficha-tecnica.pdf', '0%', '47-49,5% P2O5 total (44-46,5% asimilable, típico 48%)', '0%', null, '23,5-27% CaO (típico 26%)', null, null, 'Gránulos grisáceos, CAS 100-31-30-8, fórmula Ca(H2PO4)2·H2O, humedad 0,75-1,2%', 'Hoja de especificaciones de Innophos Fosfatados de México S.A. de C.V. (Coatzacoalcos, Veracruz).', true, false),
+  ('Tigsamag 2E', 'Manttra', null, 'Saco 50 Kg, Jumbo 1000/1250/1500 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/TIGSAMAG_2E_FICHA_TECNICA.pdf', null, null, null, null, '26% CaO', '16% MgO', null, 'Granulado esférico negro, 90% entre 2-4mm, densidad 75 lb/cft', 'A pesar del nombre "tigsamag" (que sugiere marca Tigsa), esta ficha específica lleva membrete de Manttra, no de Tigsa — a diferencia de "Tigsamag 4E" cuya ficha sí es de Tigsa. Verificar con el proveedor cuál es el fabricante real de cada presentación.', true, true),
+  ('Tigsamag 4E', 'Tigsa', null, 'Saco 50 Kg, Jumbo 1000/1250/1500 Kg, Granel', 'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/TIGSAMAG_4E_FICHA_TECNICA-.pdf', null, null, null, null, '23% CaO', '14% MgO', 'Zinc (ZnO) 2%, Boro (B2O3) 0,6%', 'Granulado esférico café, 90% entre 2-4mm típico, densidad 73 lb/cft', 'Ficha con membrete "fabricado por tigsa" (tigsa.com.gt) explícito.', true, false),
+  ('Super Fósforo Simple Granulado', 'Fertilizantes Tepeyac', null, 'Sacos 25 Kg, 50 Kg, Granel', '', null, null, null, null, null, null, null, null, 'Sin ningún documento enlazado en el sitio (ni ficha técnica ni hoja de seguridad). La descripción menciona aporte de azufre y calcio sin cifras — verificar composición con el proveedor.', false, true)
+) as v(name, mfg, grado_formula, presentation, ficha_tecnica, n_pct, p_pct, k_pct, s_pct, ca_pct, mg_pct, otros_micronutrientes, caracteristicas_fisicas, notas, ficha_completa, verificar_con_proveedor)
+where not exists (
+  select 1 from public.productos p where p.name = v.name and p.category = 'nutricion'
+);
+
+-- Vincula TODOS los productos de Tepeyac (nuevos + deduplicados) con el
+-- distribuidor Fertilizantes Tepeyac. Para los deduplicados, busca el
+-- producto EXISTENTE por fabricante+grado en vez de por nombre.
+insert into public.producto_distribuidores (producto_id, distribuidor_id)
+select p.id, (select id from public.distribuidores where name = 'Fertilizantes Tepeyac')
+from public.productos p
+where p.category = 'nutricion'
+  and (
+    p.name in ('Can estándar', 'Can granular envasado', 'Cloruro de potasio soluble', 'DAP Fosfato diamónico', 'Fosfonitrato envasado', 'K MAG envasado', 'MAP 11 52 00', 'NUTRIDRIP MKP', 'SAM granular', 'Sam STD estándar', 'SOP Granular Envasado, sulfato de potasio', 'Sulfato de Potasio STD Envasado', 'Sulfo Nitrato Envasado', 'Ultra compost', 'Urea Granular', 'Urea prilada', 'ASN 30-7 Envasado', 'Azufertil 2E', 'Azufertil 5E Zinc Boro', 'Daphos Granular', 'Entec envasado', 'Granumax 2.1 S', 'Nitrofoska 16-16-16', 'Nitrofoska MOP', 'Nitrofoska Perfect', 'Nitrofoska Special', 'Nutrilake Nitrogenado', 'Superfosfato Triple granulado', 'Tigsamag 2E', 'Tigsamag 4E', 'Super Fósforo Simple Granulado')
+    or (p.fabricante_id = (select id from public.fabricantes where name = 'Yara') and p.grado_formula = '15-15-15')
+  )
+  and not exists (
+    select 1 from public.producto_distribuidores pd
+    where pd.producto_id = p.id
+      and pd.distribuidor_id = (select id from public.distribuidores where name = 'Fertilizantes Tepeyac')
+  );
