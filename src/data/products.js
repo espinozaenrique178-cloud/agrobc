@@ -170,15 +170,29 @@ export function setProducts(rows) {
   }));
 }
 
+// Fisher-Yates: baraja sin mutar el arreglo original. Se usa para que, dentro
+// de cada nivel de prioridad, no siempre ganen los mismos fabricantes por
+// venir primero en orden alfabético (ej. "Ácido..." de Servicios NH3 tapando
+// para siempre a cualquier producto de un distribuidor nuevo).
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Nunca mezcla categorías: primero coincidencia exacta de cultivo dentro
-// de la categoría pedida, luego el resto de esa misma categoría.
+// de la categoría pedida, luego el resto de esa misma categoría. Dentro de
+// cada nivel, el orden es aleatorio en cada búsqueda (ver shuffle arriba).
 export function matchProducts(cropValue, problemValue) {
   const category = CATEGORY_BY_PROBLEM[problemValue] || null;
   const inCategory = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS.slice();
 
-  const cropSpecific = inCategory.filter((p) => p.crops.includes(cropValue));
-  const cropAny = inCategory.filter((p) => p.crops.includes('any'));
-  const rest = inCategory.filter((p) => !p.crops.includes(cropValue) && !p.crops.includes('any'));
+  const cropSpecific = shuffle(inCategory.filter((p) => p.crops.includes(cropValue)));
+  const cropAny = shuffle(inCategory.filter((p) => p.crops.includes('any')));
+  const rest = shuffle(inCategory.filter((p) => !p.crops.includes(cropValue) && !p.crops.includes('any')));
 
   const seen = new Set();
   const out = [];
