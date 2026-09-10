@@ -414,7 +414,7 @@ where p.category = 'nutricion'
 -- ============================================================
 -- 7) Catálogo de fertilizantes — Fertilizantes Tepeyac (ftepeyac.com.mx)
 --    Generado automáticamente (piloto: categoría "Fertilizantes sólidos",
---    32 productos del sitio, extraídos el 10 de septiembre de 2026).
+--    31 productos del sitio, extraídos el 10 de septiembre de 2026).
 --    Deduplicación: "YaraMila TRISTAR (15-15-15)" coincide en fabricante
 --    (Yara) + grado (15-15-15) con "Yara Mila 15-15-15" ya importado de
 --    Servicios NH3 — no se duplica el producto, solo se agrega Tepeyac
@@ -451,7 +451,7 @@ insert into public.productos (
   notas, ficha_completa, verificar_con_proveedor
 )
 select
-  v.name, v.mfg, 'Fertilizante', v.grado_formula, v.presentation, 0, 'nutricion', '{any}'::text[],
+  v.name, v.mfg, 'Fertilizante', coalesce(v.grado_formula, ''), v.presentation, 0, 'nutricion', '{any}'::text[],
   v.ficha_tecnica, (select id from public.fabricantes f where f.name = v.mfg),
   v.grado_formula, 'Fertilizantes sólidos',
   v.n_pct, v.p_pct, v.k_pct, v.s_pct, v.ca_pct, v.mg_pct, v.otros_micronutrientes,
