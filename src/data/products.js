@@ -157,6 +157,7 @@ export let PRODUCTS = FALLBACK_PRODUCTS;
 export function setProducts(rows) {
   if (!rows || rows.length === 0) return;
   PRODUCTS = rows.map((row) => ({
+    id: row.id,
     mfg: row.mfg || '',
     domain: '',
     fichaUrl: row.ficha_tecnica || '',
