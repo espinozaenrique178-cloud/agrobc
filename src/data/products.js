@@ -186,6 +186,13 @@ function parsePct(str) {
   return m ? parseFloat(m[1]) : 0;
 }
 
+// Por debajo de 1% se trata como impureza incidental (ej. el 0.07% CaO del
+// Ácido Fosfórico, listado en su ficha junto a Al2O3/Fe2O3 como residuo de
+// la roca fosfórica, no como nutriente formulado) y no cuenta como "aporta
+// este nutriente" — evita recomendar ese tipo de producto para una
+// deficiencia que en realidad no corrige.
+const MIN_MACRO_PCT = 1;
+
 const MACRO_FIELD = { n: 'nPct', p: 'pPct', k: 'kPct', s: 'sPct', ca: 'caPct', mg: 'mgPct' };
 
 // Los micronutrientes no siempre tienen columna propia — se identifican por
@@ -228,10 +235,11 @@ export const DEFICIENCY_NUTRIENT_KEY = {
 
 function productHasNutrient(p, key) {
   if (MACRO_FIELD[key]) {
-    return parsePct(p[MACRO_FIELD[key]]) > 0;
+    return parsePct(p[MACRO_FIELD[key]]) >= MIN_MACRO_PCT;
   }
   const nameLower = (p.name || '').toLowerCase();
-  if (MICRO_NAME_KEYWORDS[key].some((kw) => nameLower.includes(kw))) return true;
+  const microLower = (p.otrosMicro || '').toLowerCase();
+  if (MICRO_NAME_KEYWORDS[key].some((kw) => nameLower.includes(kw) || microLower.includes(kw))) return true;
   if (p.otrosMicro && MICRO_SYMBOL_REGEX[key].test(p.otrosMicro)) return true;
   return false;
 }
