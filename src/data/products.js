@@ -168,7 +168,72 @@ export function setProducts(rows) {
     price: Number(row.price) || 0,
     category: row.category,
     crops: row.crops && row.crops.length ? row.crops : ['any'],
+    nPct: row.n_pct || '',
+    pPct: row.p_pct || '',
+    kPct: row.k_pct || '',
+    sPct: row.s_pct || '',
+    caPct: row.ca_pct || '',
+    mgPct: row.mg_pct || '',
+    otrosMicro: row.otros_micronutrientes || '',
   }));
+}
+
+// Cada valor es texto libre ("22% K2O (18.26% K)", "0%", null…), así que solo
+// se usa el primer número como señal de "sí aporta este nutriente".
+function parsePct(str) {
+  if (!str) return 0;
+  const m = String(str).match(/([\d.]+)/);
+  return m ? parseFloat(m[1]) : 0;
+}
+
+const MACRO_FIELD = { n: 'nPct', p: 'pPct', k: 'kPct', s: 'sPct', ca: 'caPct', mg: 'mgPct' };
+
+// Los micronutrientes no siempre tienen columna propia — se identifican por
+// el nombre del producto (ej. "Zinc (Wolf Trax DDP)") o por el símbolo en
+// otros_micronutrientes (ej. "10% B" en un producto de Calcio+Boro).
+const MICRO_NAME_KEYWORDS = {
+  fe: ['fierro', 'hierro'],
+  zn: ['zinc'],
+  b: ['boro'],
+  mn: ['manganeso'],
+  cu: ['cobre'],
+  mo: ['molibdeno'],
+};
+const MICRO_SYMBOL_REGEX = {
+  fe: /\bFe\b/,
+  zn: /\bZn\b/,
+  b: /\bB\b/,
+  mn: /\bMn\b/,
+  cu: /\bCu\b/,
+  mo: /\bMo\b/,
+};
+
+// Une cada deficiencia específica al nutriente que realmente la corrige, para
+// que "Deficiencia de calcio" no recomiende un fertilizante de N-S como el
+// Sulfato de Amonio solo por estar en la categoría "nutrición".
+export const DEFICIENCY_NUTRIENT_KEY = {
+  'Deficiencia de nitrógeno': 'n',
+  'Deficiencia de fósforo': 'p',
+  'Deficiencia de potasio': 'k',
+  'Deficiencia de azufre': 's',
+  'Deficiencia de calcio': 'ca',
+  'Deficiencia de magnesio': 'mg',
+  'Deficiencia de hierro': 'fe',
+  'Deficiencia de zinc': 'zn',
+  'Deficiencia de boro': 'b',
+  'Deficiencia de manganeso': 'mn',
+  'Deficiencia de cobre': 'cu',
+  'Deficiencia de molibdeno': 'mo',
+};
+
+function productHasNutrient(p, key) {
+  if (MACRO_FIELD[key]) {
+    return parsePct(p[MACRO_FIELD[key]]) > 0;
+  }
+  const nameLower = (p.name || '').toLowerCase();
+  if (MICRO_NAME_KEYWORDS[key].some((kw) => nameLower.includes(kw))) return true;
+  if (p.otrosMicro && MICRO_SYMBOL_REGEX[key].test(p.otrosMicro)) return true;
+  return false;
 }
 
 // Fisher-Yates: baraja sin mutar el arreglo original. Se usa para que, dentro
@@ -189,7 +254,15 @@ function shuffle(arr) {
 // cada nivel, el orden es aleatorio en cada búsqueda (ver shuffle arriba).
 export function matchProducts(cropValue, problemValue) {
   const category = CATEGORY_BY_PROBLEM[problemValue] || null;
-  const inCategory = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS.slice();
+  let inCategory = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS.slice();
+
+  // Para una deficiencia específica (ej. "Deficiencia de calcio"), solo
+  // deben quedar los productos que realmente aportan ese nutriente — no
+  // basta con estar en la categoría "nutrición".
+  const deficiencyKey = DEFICIENCY_NUTRIENT_KEY[problemValue];
+  if (deficiencyKey) {
+    inCategory = inCategory.filter((p) => productHasNutrient(p, deficiencyKey));
+  }
 
   const cropSpecific = shuffle(inCategory.filter((p) => p.crops.includes(cropValue)));
   const cropAny = shuffle(inCategory.filter((p) => p.crops.includes('any')));
