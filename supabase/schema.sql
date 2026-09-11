@@ -510,3 +510,85 @@ where p.category = 'nutricion'
     where pd.producto_id = p.id
       and pd.distribuidor_id = (select id from public.distribuidores where name = 'Fertilizantes Tepeyac')
   );
+
+-- ============================================================
+-- Sección 9: Piloto de 12 insecticidas de Fertilizantes Tepeyac
+-- (categoría "Insecticidas" del sitio, 62 productos en total —
+-- este es solo el piloto elegido por el usuario para probar el
+-- import completo con ficha técnica, cultivo/plaga/dosis reales).
+--
+-- NOTA sobre los links del sitio: la mayoría de las fichas técnicas
+-- enlazadas en las páginas de producto (carpeta /2021/10/) están
+-- rotas (404) — el archivo real vive en /2019/09/ con el mismo
+-- nombre. Se verificó cada URL vía la API wp-json de WordPress
+-- antes de usarla aquí.
+--
+-- Furadan 350L (carbofuran) es un organofosforado de categoría
+-- toxicológica 1 ("Mortal en caso de ingestión/inhalación", pictograma
+-- de calavera) — el más tóxico de este lote. Se importa porque es
+-- parte real del catálogo del distribuidor, pero vale la pena saberlo.
+-- ============================================================
+
+insert into public.fabricantes (name)
+select v.name from (values
+  ('Syngenta'), ('Bayer'), ('FMC'), ('BASF'), ('Adama'),
+  ('Summit Agro'), ('Gowan'), ('Valent'), ('Allister de México')
+) as v(name)
+where not exists (select 1 from public.fabricantes f where f.name = v.name);
+
+insert into public.productos (category, name, mfg, type, ingredient, presentation, ficha_tecnica, crops, fabricante_id)
+select 'plaga', v.name, v.mfg, 'Insecticida', v.ingredient, v.presentation, v.ficha_tecnica, v.crops,
+  (select id from public.fabricantes where name = v.mfg)
+from (values
+  ('Alika', 'Syngenta', 'Thiametoxam 12.62% + Lambda cyalotrina 9.49%', '0.100 Lt, 0.200 Lt, 0.500 Lt, 1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/ALIKA_FICHA_TECNICA.pdf',
+    '{"Algodón hueso","Tomate rojo (jitomate)","Chile verde","Papa","Tomate verde","Berenjena","Limón","Naranja","Toronja (pomelo)","Lima","Mandarina","Caña de azúcar","Frijol","Soya","Tabaco","Calabacita","Melón","Pepino","Sandía","Calabaza","Trigo","Maíz","Sorgo","Rosa","Gerbera","Papaya","Aguacate"}'::text[]),
+  ('Rimon 100 EC', 'Adama', 'Novaluron 9.34%', '1 Lt, 200 mL',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/FICHA-TECNICA_RIMON-100-EC_ADAMA_08.pdf',
+    '{"Tomate rojo (jitomate)","Tomate verde","Berenjena","Maíz","Algodón hueso","Tabaco","Col (repollo)","Coliflor","Col de bruselas","Brócoli","Papa","Manzana","Aguacate","Pepino","Melón","Calabaza","Calabacita","Sandía"}'::text[]),
+  ('Talstar Xtra Control', 'FMC', 'Bifentrina 3.33% + Abamectina 0.33%', '1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Talstar_xtra_ficha_tecnica.pdf',
+    '{"Chile verde","Tomate rojo (jitomate)","Papa","Tomate verde","Pepino","Melón","Calabaza","Calabacita","Sandía","Fresa","Crisantemo","Rosa","Lima","Limón","Mandarina","Naranja","Toronja (pomelo)"}'::text[]),
+  ('Starkle', 'Summit Agro', 'Dinotefuran 10%', '1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Starkle_ficha_tecnica.pdf',
+    '{"Chile verde","Tomate rojo (jitomate)","Berenjena","Papa","Tomate verde","Pepino","Calabaza","Calabacita","Melón","Sandía"}'::text[]),
+  ('Nomolt', 'BASF', 'Teflubenzuron 13.50%', '250 mL, 1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Nomolt_ficha_tecnica.pdf',
+    '{"Tomate rojo (jitomate)","Tomate verde","Chile verde","Berenjena","Maíz"}'::text[]),
+  ('Neemix 4.5', 'Summit Agro', 'Azadiractina 4.5%', '1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Neemix_ficha_tecnica.pdf',
+    '{"any"}'::text[]),
+  ('Furadan 350L', 'FMC', 'Carbofuran 33.21%', '1 L, 10 L',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Furadan_ficha_tecnica.pdf',
+    '{"Arroz palay","Caña de azúcar","Maíz","Papa","Plátano","Sorgo"}'::text[]),
+  ('Matador 90 PS', 'Adama', 'Metomilo 90%', '0.100 Kg, 1 Kg',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Matador_ficha_tecnica.pdf',
+    '{"Algodón hueso","Alfalfa","Cebolla","Chile verde","Col (repollo)","Brócoli","Frijol","Tomate rojo (jitomate)","Maíz","Sorgo","Melón","Sandía","Pepino","Papa","Soya","Cacahuate","Tabaco"}'::text[]),
+  ('Imidan 50 PH', 'Gowan', 'Fosmet 50%', '0.500 Kg, 1 Kg, 5 Kg',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Imidan_ficha_tecnica.pdf',
+    '{"Algodón hueso","Manzana","Alfalfa","Vid","Papa","Arándano"}'::text[]),
+  ('PyGanic', 'Valent', 'Piretrinas naturales 5.0%', '3.785 L, 1 L, Galón',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Pyganic_ficha_tecnica.pdf',
+    '{"Tomate rojo (jitomate)","Berenjena","Chile verde","Papa","Tomate verde","Fresa","Frambuesa","Arándano","Zarzamora","Brócoli","Col (repollo)","Coliflor","Col de bruselas"}'::text[]),
+  ('Podium', 'Allister de México', 'Abamectina 1.8%', '250 mL, 1 Lt',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/podium_ficha_tecnica.pdf',
+    '{"Tomate rojo (jitomate)","Crisantemo","Fresa"}'::text[]),
+  ('Koromite 1% CE', 'Gowan', 'Milbemectina 1%', '200 mL, 1 L',
+    'https://www.ftepeyac.com.mx/wp-content/uploads/2019/09/Koromite_ficha_tecnica.pdf',
+    '{"Rosa","Crisantemo","Gerbera","Fresa","Naranja","Limón","Lima","Mandarina","Toronja (pomelo)","Manzana","Pera","Papaya","Aguacate"}'::text[])
+) as v(name, mfg, ingredient, presentation, ficha_tecnica, crops)
+where not exists (
+  select 1 from public.productos p where p.name = v.name and p.category = 'plaga'
+);
+
+-- Vincula los 12 insecticidas nuevos con el distribuidor Fertilizantes Tepeyac.
+insert into public.producto_distribuidores (producto_id, distribuidor_id)
+select p.id, (select id from public.distribuidores where name = 'Fertilizantes Tepeyac')
+from public.productos p
+where p.category = 'plaga'
+  and p.name in ('Alika', 'Rimon 100 EC', 'Talstar Xtra Control', 'Starkle', 'Nomolt', 'Neemix 4.5', 'Furadan 350L', 'Matador 90 PS', 'Imidan 50 PH', 'PyGanic', 'Podium', 'Koromite 1% CE')
+  and not exists (
+    select 1 from public.producto_distribuidores pd
+    where pd.producto_id = p.id
+      and pd.distribuidor_id = (select id from public.distribuidores where name = 'Fertilizantes Tepeyac')
+  );
